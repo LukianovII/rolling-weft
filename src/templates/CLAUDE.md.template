@@ -1,0 +1,89 @@
+# Project Rules
+
+> How the agent works in this project. Not a project description.
+> Replace {placeholders} and fill Project Context before use.
+
+## Core Behaviors
+
+**Research before code.** For unfamiliar APIs, SDKs, or proprietary systems: investigate first,
+check existing FINDING/LEARNED records in beads, read `.context/patterns.md`, then implement.
+
+**Record findings immediately.** Every probe iteration leaves a FINDING in beads.
+Every discovered gotcha becomes a LEARNED. Don't defer — write during the work.
+```
+bd comment {ID} "FINDING [tag]: exact observation with field names, error codes, behavior"
+bd comment {ID} "LEARNED [tag]: generalized conclusion, gotcha for future use"
+```
+
+**Mark assumptions.** Any decision without full verification:
+```
+bd comment {ID} "ASSUMPTION [tag]: what was assumed and why (alternative if wrong)"
+```
+
+**Compound before compact.** Before `/compact`, extract knowledge to patterns.md,
+record stopping point in beads, update .designs/ if contracts changed.
+Load skill `@skills/compound` for the full procedure.
+
+**Check constitution before deciding.** Before architectural choices, verify
+against `constitution.md`. Violations require explicit justification.
+
+## Knowledge Routing
+
+Every piece of knowledge has exactly one destination:
+
+| What | Where | Format |
+|------|-------|--------|
+| Probe result (exact data) | beads comment | `FINDING [tag]: ...` |
+| Gotcha for future sessions | beads comment + patterns.md | `LEARNED [tag]: ...` |
+| Unverified decision | beads comment | `ASSUMPTION [tag]: ...` |
+| Task state, blocking, next steps | beads (`bd ready`, `bd prime`) | bd update/close/create |
+| Architecture decision (why) | `.designs/` or ADR | design-doc slice or decision record |
+| Module contract (types, fields) | `.designs/{module}.md` | YAML code block |
+| Cross-module invariant | `.designs/invariants.md` | Numbered rules |
+
+**Project knowledge belongs in project files, not in auto-memory.**
+
+## Comment Convention
+
+**Prefixes:**
+- `FINDING:` — probe iteration result (exact data: field names, error codes, actual behavior)
+- `LEARNED:` — generalized gotcha (visible to neighbor nodes and future sessions)
+- `ASSUMPTION:` — decision without full verification (reviewed on finalize)
+- `SUPERSEDED:` — previous knowledge replaced (original stays, marked as changed)
+- `BLOCKED:` — need user decision (list options A, B, C)
+
+**Tags** — domain/stack level, 1-3 per record, lowercase:
+`[com]`, `[sql]`, `[dotnet]`, `[kafka]`, `[rest]`, `[grpc]`, `[vendorx]`
+
+## Node Lifecycle (Summary)
+
+Each task follows: **plan** → [**discover**] → **investigate** → [**discuss** → **approve** → **probe** → **record**]* → **finalize**
+
+Hard rules:
+1. Every probe must leave a FINDING (knowledge lost otherwise)
+2. Before `bd close`: review ALL ASSUMPTION records
+3. Before finalize: verify blocking status with user
+
+Load skill `@skills/node-lifecycle` for full lifecycle details.
+
+## Skills
+
+| Situation | Skill |
+|-----------|-------|
+| Working on a task (plan/discover/investigate/probe/finalize) | `@skills/node-lifecycle` |
+| Deep research, vendor docs, large codebase reads | `@skills/investigation` |
+| About to run `/compact` | `@skills/compound` |
+| Creating or updating design documents | `@skills/design-docs` |
+| Setting up or revising constitution.md | `@skills/constitution` |
+
+## Project Context
+
+<!-- Replace this section with your project-specific context -->
+<!-- Example:
+**Domain:** {brief description}
+**Platform:** {Windows/.NET/Linux/Rust/etc}
+**Key constraint:** {e.g., "COM API is STA-only — serialize all calls"}
+**External systems:** {list proprietary systems this project integrates with}
+**Reference:** `.context/patterns.md` for known gotchas
+**Constitution:** `constitution.md` for architectural gates
+-->

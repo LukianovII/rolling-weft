@@ -1,0 +1,36 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node hooks/scripts/session-start.js" }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          { "type": "command", "command": "node hooks/scripts/pre-compact.js" }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "node hooks/scripts/pre-commit.js" },
+          { "type": "command", "command": "node hooks/scripts/finalize-check.js" }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "node hooks/scripts/knowledge-capture.js" },
+          { "type": "command", "command": "node hooks/scripts/record-enforcement.js" }
+        ]
+      }
+    ]
+  }
+}

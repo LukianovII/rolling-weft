@@ -1,0 +1,8 @@
+{
+  "name": "rolling-weft",
+  "description": "Persistent project memory and structured development workflow for Claude Code",
+  "version": "0.1.0",
+  "author": {
+    "name": "rolling-weft"
+  }
+}

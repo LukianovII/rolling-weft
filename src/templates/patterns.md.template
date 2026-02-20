@@ -1,0 +1,34 @@
+# Codebase Patterns & Gotchas
+
+## Gotchas
+
+<!-- API/SDK surprises, workarounds, non-obvious failure modes.
+     Entry format:
+
+     ### Title
+     What happens and why.
+     ```
+     // WRONG:
+     // CORRECT:
+     ```
+     **Verified:** Month Year, [context]
+     **Source:** LEARNED from bead {ID} (if applicable)
+-->
+
+## Patterns
+
+<!-- Recurring architectural patterns and design decisions.
+     Entry format:
+
+     ### Pattern Name
+     When it applies and how it works.
+     Key invariants.
+-->
+
+## Conventions
+
+<!-- Project-specific rules not enforced by linters.
+     Entry format:
+
+     ### Convention Name
+     What and why. -->

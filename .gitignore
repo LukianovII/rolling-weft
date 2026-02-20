@@ -1,0 +1,26 @@
+# Claude Code runtime — not part of the release (root only)
+/.claude/
+
+# Development workspace — local only, not published
+/dev/
+/CLAUDE.md
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Node (if users run npm in this dir for any reason)
+node_modules/
+
+# Windows
+ehthumbs.db

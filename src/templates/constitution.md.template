@@ -1,0 +1,67 @@
+# Architecture Constitution
+
+> Architectural principles as gates. Check before every significant technical decision.
+> Source of truth for "is this approach acceptable here?"
+> Delete gates that don't apply. Add domain-specific gates.
+
+## Gates
+
+### Platform & Stack
+
+- [ ] Target platform: {Windows/Linux/both}
+- [ ] Runtime: {.NET Framework 4.8.1 / .NET 8 / Rust / Node.js / ...}
+- [ ] Build constraints: {e.g., "no WSL required", "must compile on CI without GUI"}
+
+### Dependencies
+
+- [ ] New dependency requires: 1) explicit need, 2) platform-compatible, 3) minimal native build toolchain
+- [ ] Lock major versions; no `^` for runtime dependencies
+- [ ] Max {N} external dependencies per module
+
+### Concurrency & Threading
+
+<!-- Fill in domain-specific concurrency rules. Examples: -->
+- [ ] {e.g., "COM calls are STA-only — no await between calls in a transaction"}
+- [ ] {e.g., "session-local objects must stay on the thread that created them"}
+- [ ] {e.g., "gRPC calls must have timeout; default 30s, max 120s"}
+
+### Data & State
+
+- [ ] No mutable global state
+- [ ] All external state mutations have a compensating rollback operation
+- [ ] ID types verified against external system (int vs guid vs string)
+- [ ] {e.g., "SQLite for local transactionality; no direct external DB writes"}
+
+### Testing
+
+- [ ] Component tests: isolated logic, mockable boundaries
+- [ ] Feature tests: real dependencies (not mocks) for external API calls
+- [ ] Tests do not depend on execution order
+- [ ] {e.g., "air-gapped testing: build is transferred to isolated machine for verification"}
+
+### External APIs
+
+- [ ] Retry policy: {e.g., "3 retries, exponential backoff, max 30s"}
+- [ ] Error handling: {e.g., "log raw response before parsing; never discard error details"}
+- [ ] Rate limits: {e.g., "max 10 concurrent requests to VendorX API"}
+
+### Documentation
+
+- [ ] Design-docs in `.designs/` before cross-module changes
+- [ ] Architecture decisions recorded as ADRs or in design-doc slices
+- [ ] Breaking contract changes: update `shared/.designs/`, commit, notify team
+
+---
+
+## Violation Protocol
+
+If a decision violates a gate above:
+
+1. **Document** in design-doc or ADR explaining why the violation is necessary
+2. **Note the simpler alternative** that was rejected and why
+3. **Reference** in the code (comment) and in the bead that introduced the violation
+4. **Never silently violate** — undocumented violations are architecture bugs
+
+---
+
+<!-- Replace examples above with your project's actual constraints. -->

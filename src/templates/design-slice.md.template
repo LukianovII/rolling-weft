@@ -1,0 +1,58 @@
+# {Module Name}
+
+## Contract
+
+```yaml
+# What this module exposes to the outside world.
+# Endpoints, interfaces, events — with exact field names and types.
+
+# Example:
+# service: PaymentGateway
+# protocol: gRPC
+# endpoints:
+#   ProcessPayment:
+#     request:
+#       order_id: string (UUID)
+#       amount: decimal(18,4)
+#       currency: string (ISO 4217)
+#     response:
+#       transaction_id: string (UUID)
+#       status: enum [success, declined, error]
+#       error_code: int (nullable)
+```
+
+## Internal Flow
+
+```mermaid
+sequenceDiagram
+  %% Internal flow diagram (if the module has complex sequences).
+  %% Skip this section for simple modules.
+  participant Client
+  participant Module
+  participant External
+  Client->>Module: request
+  Module->>External: call
+  External-->>Module: response
+  Module-->>Client: result
+```
+
+## Type Mappings
+
+```yaml
+# How this module's types map to/from other modules.
+# Document conversions, especially lossy ones.
+
+# Example:
+# from_module: com-bridge
+# mappings:
+#   - source: VendorProduct.Price (variant, float)
+#     target: PaymentRequest.amount (decimal 18,4)
+#     conversion: "Math.Round(price, 4, MidpointRounding.AwayFromZero)"
+#     risk: "float precision loss on amounts > 1M"
+```
+
+## Environment Constraints
+
+- **Platform:** {Windows / Linux}
+- **Runtime:** {.NET Framework 4.8.1 / Rust / Node.js / ...}
+- **Known limitations:** {e.g., "COM STA threading", "batch limit 100 per call"}

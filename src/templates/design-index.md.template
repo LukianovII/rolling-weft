@@ -1,0 +1,26 @@
+# {Project Name} — System Overview
+
+## Module Graph
+
+```mermaid
+graph LR
+  %% Replace with actual modules and connections
+  A[Module A] -->|"gRPC"| B[Module B]
+  B -->|"Kafka"| C[Module C]
+```
+
+## Modules
+
+| Module | Design Slice | Platform | External Interface |
+|--------|-------------|----------|--------------------|
+| {module-a} | [module-a.md](.designs/module-a.md) | {platform} | {gRPC / REST / COM / Kafka / ...} |
+
+## Cross-Module Invariants
+
+See [invariants.md](.designs/invariants.md)
+
+<!-- Invariants are numbered rules that span multiple modules.
+     Example:
+     INV-001: All monetary amounts use decimal(18,4), never float/double
+     INV-002: Every gRPC request includes metadata.trace_id
+-->
