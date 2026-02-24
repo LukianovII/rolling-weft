@@ -6,17 +6,27 @@ REM Usage:
 REM   src\setup\install.bat C:\projects\my-app
 
 if "%~1"=="" (
-    echo ERROR: Target project path is required.
+    echo Where should Rolling Weft be installed?
+    echo Example: C:\projects\my-app
     echo.
-    echo Usage:
-    echo   src\setup\install.bat C:\projects\my-app
+    set /p TARGET_PATH="Project path: "
+) else (
+    set TARGET_PATH=%~1
+)
+
+if "%TARGET_PATH%"=="" (
     echo.
-    pause
+    echo ERROR: No path entered.
+    pause >nul
     exit /b 1
 )
 
+REM Strip trailing backslash (breaks quoted argument on cmd)
+if "%TARGET_PATH:~-1%"=="\" set TARGET_PATH=%TARGET_PATH:~0,-1%
+
 echo.
 echo Rolling Weft setup
+echo   Target: %TARGET_PATH%
 echo.
 
 REM --- Check dependencies ---
@@ -43,15 +53,19 @@ echo   [ok] npm
 
 bd --version >nul 2>&1
 if errorlevel 1 (
-    echo   [-] beads not found, installing...
-    call npm install -g @beads/bd
-    if errorlevel 1 (
-        echo.
-        echo ERROR: Failed to install @beads/bd.
-        pause
-        exit /b 1
-    )
-    echo   [ok] beads installed
+    echo.
+    echo ERROR: beads (bd) is not installed.
+    echo        Install it first, then re-run this script.
+    echo.
+    echo        Option A ^(recommended if Go is installed^):
+    echo          go install github.com/steveyegge/beads/cmd/bd@latest
+    echo.
+    echo        Option B ^(npm^):
+    echo          Add-MpPreference -ExclusionPath "$env:APPDATA\npm"
+    echo          npm install -g @beads/bd
+    echo.
+    pause
+    exit /b 1
 ) else (
     echo   [ok] beads
 )
@@ -66,12 +80,21 @@ if errorlevel 1 (
 )
 
 echo.
-node "%~dp0setup.js" "%~1"
+node "%~dp0setup.js" "%TARGET_PATH%"
 if errorlevel 1 (
     echo.
     echo Setup failed. See output above.
-    pause
+    echo Press any key to close...
+    pause >nul
     exit /b 1
 )
 
-pause
+echo.
+echo ============================================================
+echo  Setup complete!
+echo  Next: open Claude Code in your project and run:
+echo    @skills/onboarding
+echo ============================================================
+echo.
+echo Press any key to close...
+pause >nul

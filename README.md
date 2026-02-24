@@ -129,11 +129,24 @@ Clone this repository once. Then run setup for each project you want to add it t
 
 ### Windows
 
-```bat
-REM Install dependencies first (once, system-wide):
-npm install -g @beads/bd
-REM Install dolt: https://docs.dolthub.com/introduction/installation
+Install beads (`bd`) — pick one option:
 
+```powershell
+# Option A: via Go (recommended if Go is installed — avoids Defender issues)
+go install github.com/steveyegge/beads/cmd/bd@latest
+
+# Option B: via npm
+# bd.exe is a Go binary — Windows Defender may quarantine it as a false positive.
+# Add an exclusion first:
+Add-MpPreference -ExclusionPath "$env:APPDATA\npm"
+npm install -g @beads/bd
+```
+
+Install Dolt: https://docs.dolthub.com/introduction/installation
+
+Then run setup for your project:
+
+```bat
 src\setup\install.bat C:\projects\my-app
 ```
 
