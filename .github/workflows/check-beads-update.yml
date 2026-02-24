@@ -1,0 +1,76 @@
+name: Check beads updates
+
+on:
+  schedule:
+    # Every Monday at 09:00 UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch: # Allow manual run
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get latest beads version from npm
+        id: latest
+        run: |
+          VERSION=$(npm view @beads/bd version 2>/dev/null)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Get tracked version from beads-tracking.md
+        id: tracked
+        run: |
+          VERSION=$(grep -m1 '^\- \*\*npm version:\*\*' dev/research/beads-tracking.md \
+            | sed 's/.*`\(.*\)`.*/\1/')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Open issue if version changed
+        if: steps.latest.outputs.version != steps.tracked.outputs.version
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tracked = '${{ steps.tracked.outputs.version }}';
+            const latest  = '${{ steps.latest.outputs.version }}';
+
+            // Check if an open issue for this version already exists
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              state: 'open',
+              labels: 'beads-update',
+            });
+            const alreadyOpen = issues.data.some(i =>
+              i.title.includes(latest)
+            );
+            if (alreadyOpen) {
+              console.log(`Issue for ${latest} already open — skipping`);
+              return;
+            }
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              title: `beads updated: ${tracked} → ${latest}`,
+              labels: ['beads-update'],
+              body: [
+                '## beads dependency update',
+                '',
+                `Tracked version: \`${tracked}\``,
+                `Latest npm version: \`${latest}\``,
+                '',
+                '## Action required',
+                '',
+                '1. Update the local vendor clone:',
+                '   ```bash',
+                '   cd dev/vendor/beads && git pull',
+                '   git log --oneline ORIG_HEAD..HEAD',
+                '   ```',
+                '2. Work through the checklist in `dev/research/beads-tracking.md`',
+                '3. Update `dev/research/beads-tracking.md` with the new version and findings',
+                '4. Close this issue',
+              ].join('\n'),
+            });

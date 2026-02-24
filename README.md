@@ -123,20 +123,27 @@ keep the taxonomy bounded.
 
 ## Installation
 
-**Requirements:** Node.js (any modern version). No WSL, no bash required.
+**Requirements:** Node.js, [beads](https://github.com/steveyegge/beads) (`bd`), and [Dolt](https://www.dolthub.com/) (beads uses Dolt as storage backend). No WSL, no bash required.
 
 Clone this repository once. Then run setup for each project you want to add it to.
 
 ### Windows
 
 ```bat
+REM Install dependencies first (once, system-wide):
+npm install -g @beads/bd
+REM Install dolt: https://docs.dolthub.com/introduction/installation
+
 src\setup\install.bat C:\projects\my-app
 ```
 
 ### Linux / macOS
 
 ```bash
+# Install dependencies first (once, system-wide):
 npm install -g @beads/bd
+brew install dolt   # or: https://docs.dolthub.com/introduction/installation
+
 node /path/to/rolling-weft/src/setup/setup.js /path/to/my-app
 ```
 

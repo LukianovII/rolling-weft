@@ -56,6 +56,15 @@ if errorlevel 1 (
     echo   [ok] beads
 )
 
+dolt version >nul 2>&1
+if errorlevel 1 (
+    echo   [!] dolt not found. beads requires dolt as storage backend.
+    echo       Install from: https://docs.dolthub.com/introduction/installation
+    echo       Then re-run this script or run: bd init
+) else (
+    echo   [ok] dolt
+)
+
 echo.
 node "%~dp0setup.js" "%~1"
 if errorlevel 1 (

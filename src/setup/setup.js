@@ -142,17 +142,31 @@ if (fs.existsSync(beadsDir)) {
   });
 
   if (bdCheck.status !== 0) {
-    console.log('  !  bd not found. Install beads first:');
+    console.log('  !  bd not found. Install beads and dolt first:');
     console.log('     npm install -g @beads/bd');
+    console.log('     dolt: https://docs.dolthub.com/introduction/installation');
     console.log('     Then run: bd init');
   } else {
-    const result = spawnSync('bd', ['init'], {
+    // Check if dolt is available (required by beads — SQLite backend was removed)
+    const doltCheck = spawnSync('dolt', ['version'], {
       cwd: projectRoot,
-      stdio: 'inherit',
+      stdio: 'pipe',
       shell: true,
     });
-    if (result.status !== 0) {
-      console.log('  !  bd init failed — run "bd init" manually');
+
+    if (doltCheck.status !== 0) {
+      console.log('  !  dolt not found. beads requires dolt as storage backend.');
+      console.log('     Install from: https://docs.dolthub.com/introduction/installation');
+      console.log('     Then run: bd init');
+    } else {
+      const result = spawnSync('bd', ['init'], {
+        cwd: projectRoot,
+        stdio: 'inherit',
+        shell: true,
+      });
+      if (result.status !== 0) {
+        console.log('  !  bd init failed — run "bd init" manually');
+      }
     }
   }
 }
