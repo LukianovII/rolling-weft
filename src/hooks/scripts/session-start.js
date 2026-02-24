@@ -7,15 +7,45 @@
  * Windows-compatible: pure Node.js, no bash required.
  */
 
-const { execSync } = require('child_process');
+const { execSync, spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
 const cwd = process.env.CLAUDE_PROJECT_ROOT || process.cwd();
 const parts = [];
 
-// 1. Beads context
 const beadsDir = path.join(cwd, '.beads');
+
+// 0. Windows: ensure dolt sql-server is running before any bd calls.
+//    On Unix, beads auto-starts dolt. On Windows, Setpgid is not supported
+//    so beads cannot do it — we do it here instead.
+if (process.platform === 'win32' && fs.existsSync(beadsDir)) {
+  const portCheck = () => spawnSync('node', ['-e', [
+    'const n=require("net"),s=new n.Socket();',
+    's.setTimeout(500);',
+    's.on("connect",()=>{s.destroy();process.exit(0)});',
+    's.on("timeout",()=>{s.destroy();process.exit(1)});',
+    's.on("error",()=>process.exit(1));',
+    's.connect(3307,"127.0.0.1");',
+  ].join('')], { stdio: 'pipe', timeout: 1500 });
+
+  if (portCheck().status !== 0) {
+    const doltCwd = process.env.USERPROFILE || process.env.TEMP || 'C:\\';
+    spawnSync(
+      'powershell',
+      ['-NoProfile', '-NonInteractive', '-Command',
+       'Start-Process -FilePath dolt -ArgumentList @("sql-server","--port","3307") -WindowStyle Hidden'],
+      { stdio: 'pipe', cwd: doltCwd }
+    );
+    // Poll for readiness (up to 10 s)
+    for (let i = 0; i < 10; i++) {
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1000);
+      if (portCheck().status === 0) break;
+    }
+  }
+}
+
+// 1. Beads context
 if (fs.existsSync(beadsDir)) {
   try {
     const prime = execSync('bd prime', {
