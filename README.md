@@ -167,13 +167,28 @@ The installer auto-starts `dolt sql-server` if it is not already running.
 
 ### Linux / macOS
 
-```bash
-# Install dependencies first (once, system-wide):
-npm install -g @beads/bd
-brew install dolt   # or: https://docs.dolthub.com/introduction/installation
+Install beads (`bd`):
 
+```bash
+npm install -g @beads/bd
+# or: go install github.com/steveyegge/beads/cmd/bd@latest
+```
+
+Install Dolt:
+
+```bash
+brew install dolt                          # macOS
+curl -fsSL https://get.doltlab.com | sh   # Linux
+# or: https://docs.dolthub.com/introduction/installation
+```
+
+Then run setup for your project:
+
+```bash
 node /path/to/rolling-weft/src/setup/setup.js /path/to/my-app
 ```
+
+On Linux/macOS, beads starts `dolt sql-server` automatically — no manual step needed.
 
 The installer:
 1. Copies templates (CLAUDE.md, constitution.md, patterns.md, design-doc scaffolds) —
