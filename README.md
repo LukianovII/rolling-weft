@@ -146,9 +146,24 @@ Install Dolt: https://docs.dolthub.com/introduction/installation
 
 Then run setup for your project:
 
+Double-click `src\setup\install.bat` — it will ask for the project path:
+
+```
+Rolling Weft setup
+
+Where should Rolling Weft be installed?
+Example: C:\projects\my-app
+
+Project path: C:\projects\my-app
+```
+
+Or pass the path directly (useful for scripting):
+
 ```bat
 src\setup\install.bat C:\projects\my-app
 ```
+
+The installer auto-starts `dolt sql-server` if it is not already running.
 
 ### Linux / macOS
 
