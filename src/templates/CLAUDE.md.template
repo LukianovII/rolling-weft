@@ -75,6 +75,7 @@ Load skill `@skills/node-lifecycle` for full lifecycle details.
 | About to run `/compact` | `@skills/compound` |
 | Creating or updating design documents | `@skills/design-docs` |
 | Setting up or revising constitution.md | `@skills/constitution` |
+| Project inception (first session)      | `@skills/onboarding`   |
 
 ## Project Context
 

@@ -204,8 +204,10 @@ constitution.md              ← architectural gates (checked before decisions)
     │   └── SKILL.md         ← knowledge extraction before /compact
     ├── design-docs/
     │   └── SKILL.md         ← design document management
-    └── constitution/
-        └── SKILL.md         ← guided constitution.md setup and revision
+    ├── constitution/
+    │   └── SKILL.md         ← guided constitution.md setup and revision
+    └── onboarding/
+        └── SKILL.md         ← project inception session (run once at start)
 
 .context/
 └── patterns.md              ← project knowledge: gotchas, workarounds, patterns
@@ -336,6 +338,7 @@ context until needed (~2-4KB each vs. loading everything into every session).
 | About to run `/compact`       | `@skills/compound`       | Before context compression         |
 | Creating/updating design docs | `@skills/design-docs`    | Contract changes                   |
 | Setting up or revising gates  | `@skills/constitution`   | New project, new constraint found  |
+| Project inception session     | `@skills/onboarding`     | Once, at project start             |
 
 Skills are referenced in CLAUDE.md via a table. Claude reads them via the
 `@skills/name` syntax or directly when the situation matches.
@@ -412,3 +415,4 @@ Rolling Weft is a composition, not an invention. These projects shaped it:
 - [beads](https://github.com/steveyegge/beads) — git-backed task tracking
 - Rajiv Pant — ["reliability over intelligence" principle](https://rajiv.com/blog/2025/12/12/how-claude-memory-actually-works-and-why-claude-md-matters/)
 - [awesome-claude-skills](https://github.com/travisvn/awesome-claude-skills) — skills-as-separate-files pattern
+- [Genrich Altshuller](https://en.wikipedia.org/wiki/Genrich_Altshuller) / TRIZ — four concepts used in the onboarding skill: IFR, contradictions, system levels, resources
