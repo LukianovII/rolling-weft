@@ -5,6 +5,7 @@
 
 Persistent project memory and structured development workflow for
 [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
+Cross-platform: works on Windows, Linux, and macOS — pure Node.js, no bash or WSL required.
 
 Rolling Weft gives the agent a **development process**: research before code,
 record every probe result, capture gotchas as they happen, compound knowledge
@@ -13,6 +14,27 @@ before context compression. Task state lives in git via
 context compaction, and agent crashes.
 
 Not a plugin (yet). Just files you copy into your project with a setup script.
+
+---
+
+## Quick Start
+
+**Prerequisites:** [Node.js](https://nodejs.org/), [beads](https://github.com/steveyegge/beads) (`bd`), [Dolt](https://www.dolthub.com/)
+
+```bash
+# Clone once, then run setup for each project:
+git clone https://github.com/nicubarbaros/rolling-weft.git
+
+# Windows: double-click src\setup\install.bat
+# Linux/macOS:
+node rolling-weft/src/setup/setup.js /path/to/my-project
+```
+
+After setup, start a Claude Code session in your project and run `@skills/onboarding` —
+the guided inception session that helps you fill in CLAUDE.md, constitution.md,
+and create your first beads task.
+
+See [Installation](#installation) below for detailed steps.
 
 ---
 
@@ -33,6 +55,122 @@ discovered is lost between sessions or context compactions.
 
 If your projects are straightforward (good docs, linear implementation, single
 module) — you probably don't need this.
+
+---
+
+## Installation
+
+**Requirements:** Node.js, [beads](https://github.com/steveyegge/beads) (`bd`), and [Dolt](https://www.dolthub.com/) (beads uses Dolt as storage backend). No WSL, no bash required.
+
+Clone this repository once. Then run setup for each project you want to add it to.
+
+### Windows
+
+Install beads (`bd`) — pick one option:
+
+```powershell
+# Option A: via Go (recommended if Go is installed — avoids Defender issues)
+go install github.com/steveyegge/beads/cmd/bd@latest
+
+# Option B: via npm
+# bd.exe is a Go binary — Windows Defender may quarantine it as a false positive.
+# Add an exclusion first:
+Add-MpPreference -ExclusionPath "$env:APPDATA\npm"
+npm install -g @beads/bd
+```
+
+Install Dolt: https://docs.dolthub.com/introduction/installation
+
+Then run setup for your project:
+
+Double-click `src\setup\install.bat` — it will ask for the project path:
+
+```
+Rolling Weft setup
+
+Where should Rolling Weft be installed?
+Example: C:\projects\my-app
+
+Project path: C:\projects\my-app
+```
+
+Or pass the path directly (useful for scripting):
+
+```bat
+src\setup\install.bat C:\projects\my-app
+```
+
+The installer auto-starts `dolt sql-server` if it is not already running.
+For persistent auto-start after reboot, run `src\setup\install-dolt-service.ps1` —
+it registers a Windows Scheduled Task that starts Dolt at logon.
+
+### Linux / macOS
+
+Install beads (`bd`):
+
+```bash
+npm install -g @beads/bd
+# or: go install github.com/steveyegge/beads/cmd/bd@latest
+```
+
+Install Dolt:
+
+```bash
+brew install dolt                          # macOS
+curl -fsSL https://get.doltlab.com | sh   # Linux
+# or: https://docs.dolthub.com/introduction/installation
+```
+
+Then run setup for your project:
+
+```bash
+node /path/to/rolling-weft/src/setup/setup.js /path/to/my-app
+```
+
+On Linux/macOS, beads starts `dolt sql-server` automatically — no manual step needed.
+
+The installer:
+1. Copies templates (CLAUDE.md, constitution.md, patterns.md, design-doc scaffolds) —
+   only if the target file doesn't exist
+2. Copies skills and hooks — always overwrites (keeps framework up to date on re-run)
+3. Runs `bd init` to initialize beads — skips if `.beads/` already exists
+4. Configures Claude Code hooks in `.claude/settings.json`
+
+Re-running is safe — user-edited files (CLAUDE.md, constitution.md, patterns.md)
+are never overwritten.
+
+### After Setup: Customize
+
+**CLAUDE.md** — fill in the `## Project Context` section at the bottom:
+
+```markdown
+## Project Context
+
+**Domain:** Payment processing integration with VendorX one
+**Platform:** .NET Framework 4.8.1, Windows, COM Interop
+**Key constraint:** COM API is STA-only — serialize all calls
+**External systems:** VendorX one (COM), Backend (gRPC), Kafka
+**Reference:** `.context/patterns.md` for known gotchas
+**Constitution:** `constitution.md` for architectural gates
+```
+
+**constitution.md** — replace placeholder sections with your actual constraints.
+Delete sections that don't apply. Add domain-specific ones.
+
+**.designs/index.md** — draw your system's module graph. Even a simple one helps:
+
+```mermaid
+graph LR
+  A[Service A] -->|REST| B[Service B]
+```
+
+### Commit
+
+```bash
+cd my-app
+git add CLAUDE.md constitution.md .context/ .designs/ .claude/ hooks/ .beads/
+git commit -m "Add Rolling Weft"
+```
 
 ---
 
@@ -121,120 +259,6 @@ keep the taxonomy bounded.
 
 ---
 
-## Installation
-
-**Requirements:** Node.js, [beads](https://github.com/steveyegge/beads) (`bd`), and [Dolt](https://www.dolthub.com/) (beads uses Dolt as storage backend). No WSL, no bash required.
-
-Clone this repository once. Then run setup for each project you want to add it to.
-
-### Windows
-
-Install beads (`bd`) — pick one option:
-
-```powershell
-# Option A: via Go (recommended if Go is installed — avoids Defender issues)
-go install github.com/steveyegge/beads/cmd/bd@latest
-
-# Option B: via npm
-# bd.exe is a Go binary — Windows Defender may quarantine it as a false positive.
-# Add an exclusion first:
-Add-MpPreference -ExclusionPath "$env:APPDATA\npm"
-npm install -g @beads/bd
-```
-
-Install Dolt: https://docs.dolthub.com/introduction/installation
-
-Then run setup for your project:
-
-Double-click `src\setup\install.bat` — it will ask for the project path:
-
-```
-Rolling Weft setup
-
-Where should Rolling Weft be installed?
-Example: C:\projects\my-app
-
-Project path: C:\projects\my-app
-```
-
-Or pass the path directly (useful for scripting):
-
-```bat
-src\setup\install.bat C:\projects\my-app
-```
-
-The installer auto-starts `dolt sql-server` if it is not already running.
-
-### Linux / macOS
-
-Install beads (`bd`):
-
-```bash
-npm install -g @beads/bd
-# or: go install github.com/steveyegge/beads/cmd/bd@latest
-```
-
-Install Dolt:
-
-```bash
-brew install dolt                          # macOS
-curl -fsSL https://get.doltlab.com | sh   # Linux
-# or: https://docs.dolthub.com/introduction/installation
-```
-
-Then run setup for your project:
-
-```bash
-node /path/to/rolling-weft/src/setup/setup.js /path/to/my-app
-```
-
-On Linux/macOS, beads starts `dolt sql-server` automatically — no manual step needed.
-
-The installer:
-1. Copies templates (CLAUDE.md, constitution.md, patterns.md, design-doc scaffolds) —
-   only if the target file doesn't exist
-2. Copies skills and hooks — always overwrites (keeps framework up to date on re-run)
-3. Runs `bd init` to initialize beads — skips if `.beads/` already exists
-4. Configures Claude Code hooks in `.claude/settings.json`
-
-Re-running is safe — user-edited files (CLAUDE.md, constitution.md, patterns.md)
-are never overwritten.
-
-### After Setup: Customize
-
-**CLAUDE.md** — fill in the `## Project Context` section at the bottom:
-
-```markdown
-## Project Context
-
-**Domain:** Payment processing integration with VendorX one
-**Platform:** .NET Framework 4.8.1, Windows, COM Interop
-**Key constraint:** COM API is STA-only — serialize all calls
-**External systems:** VendorX one (COM), Backend (gRPC), Kafka
-**Reference:** `.context/patterns.md` for known gotchas
-**Constitution:** `constitution.md` for architectural gates
-```
-
-**constitution.md** — replace placeholder sections with your actual constraints.
-Delete sections that don't apply. Add domain-specific ones.
-
-**.designs/index.md** — draw your system's module graph. Even a simple one helps:
-
-```mermaid
-graph LR
-  A[Service A] -->|REST| B[Service B]
-```
-
-### Commit
-
-```bash
-cd my-app
-git add CLAUDE.md constitution.md .context/ .designs/ .claude/ hooks/ .beads/
-git commit -m "Add Rolling Weft"
-```
-
----
-
 ## What You Get
 
 After setup, your project has:
@@ -274,7 +298,7 @@ hooks/
     ├── session-start.js     ← bd prime + patterns.md reminder
     ├── pre-commit.js        ← remind to update beads before git commit
     ├── pre-compact.js       ← remind to compound before /compact
-    ├── knowledge-capture.js ← LEARNED → knowledge.jsonl index
+    ├── knowledge-capture.js ← LEARNED → knowledge.jsonl + learned:{tag} labels
     ├── finalize-check.js    ← review assumptions before bd close
     └── record-enforcement.js← remind to record FINDING after probe
 ```
@@ -397,17 +421,19 @@ Skills are referenced in CLAUDE.md via a table. Claude reads them via the
 
 ## Hooks
 
-Six Node.js hooks run automatically at the right moments. All are pure Node.js
-(no bash, no WSL) — work identically on Windows and Linux.
+Six Node.js hooks run automatically at the right moments.
+These are [Claude Code hooks](https://docs.anthropic.com/en/docs/claude-code/hooks)
+(event-based callbacks configured in `.claude/settings.json`), not Git hooks.
+All are pure Node.js — work identically on Windows, Linux, and macOS without bash or WSL.
 
-| Hook               | When                           | What                                |
-| ------------------ | ------------------------------ | ----------------------------------- |
-| session-start      | Session begins                 | `bd prime` + patterns.md reminder   |
-| pre-commit         | Before `git commit`            | Reminds to update beads state       |
-| pre-compact        | Before `/compact`              | Reminds to run compound procedure   |
-| knowledge-capture  | After `bd comment ... LEARNED` | Indexes to `knowledge.jsonl`        |
-| finalize-check     | Before `bd close`              | Assumption review + blocking status |
-| record-enforcement | After probe-like commands      | Reminds to record FINDING           |
+| Hook               | When                           | What                                     |
+| ------------------ | ------------------------------ | ---------------------------------------- |
+| session-start      | Session begins                 | `bd prime` + patterns.md reminder        |
+| pre-commit         | Before `git commit`            | Reminds to update beads state            |
+| pre-compact        | Before `/compact`              | Reminds to run compound procedure        |
+| knowledge-capture  | After `bd comment ... LEARNED` | Indexes to `knowledge.jsonl` + labels bead with `learned:{tag}` |
+| finalize-check     | Before `bd close`              | Assumption review + blocking status      |
+| record-enforcement | After probe-like commands      | Reminds to record FINDING                |
 
 Hooks degrade gracefully: if `bd` is not installed, session-start skips `bd prime`
 and shows a warning instead of failing.
@@ -443,9 +469,53 @@ the main context.
 ## Key Constraints
 
 - **No build step.** What's in `src/` is what users get.
-- **Windows-compatible.** All hooks and scripts are pure Node.js.
+- **Cross-platform.** All hooks and scripts are pure Node.js — they work identically on Windows, Linux, and macOS. No bash, no WSL, no platform-specific shell scripts.
 - **One external dependency: beads.** Hooks degrade gracefully if it's missing.
 - **Idempotent setup.** Re-running `setup.js` on an existing project is always safe.
+
+---
+
+## Troubleshooting
+
+### Windows Defender blocks bd.exe
+
+`bd` is a Go binary installed via npm. Windows Defender may quarantine it as a false positive.
+
+**Fix:** Add an exclusion before installing:
+```powershell
+Add-MpPreference -ExclusionPath "$env:APPDATA\npm"
+npm install -g @beads/bd
+```
+Or install via Go instead: `go install github.com/steveyegge/beads/cmd/bd@latest`
+
+### Dolt not running
+
+Beads requires a running `dolt sql-server`. On Linux/macOS, beads starts it automatically.
+On Windows, the session-start hook starts it if needed, but if you see connection errors:
+
+```powershell
+# Start manually:
+dolt sql-server --port 3307
+
+# Or install as auto-start task (runs at logon):
+powershell -ExecutionPolicy Bypass -File path\to\rolling-weft\src\setup\install-dolt-service.ps1
+```
+
+### bd not found
+
+Make sure `bd` is on your PATH:
+```bash
+bd --version
+```
+If installed via npm: check that `npm bin -g` is in your PATH.
+If installed via Go: check that `$GOPATH/bin` (or `$HOME/go/bin`) is in your PATH.
+
+### Hooks not firing
+
+Hooks are registered in `.claude/settings.json`. If they're not running:
+1. Check that `.claude/settings.json` exists and contains hook entries
+2. Re-run `setup.js` — it regenerates hook configuration on every run
+3. Make sure hooks scripts exist at `hooks/scripts/` in your project root
 
 ---
 
