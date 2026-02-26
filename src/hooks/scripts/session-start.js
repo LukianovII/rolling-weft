@@ -2,8 +2,9 @@
 /**
  * SessionStart hook — loads project context into Claude's session.
  * 1. Runs `bd prime` if beads is initialized.
- * 2. Reminds to check .context/patterns.md if it has content.
- * 3. Suggests context recovery if resuming work on a node.
+ * 2. Runs `bd ready` to show available tasks.
+ * 3. Reminds to check .context/patterns.md if it has content.
+ * 4. Suggests context recovery if resuming work on a node.
  * Windows-compatible: pure Node.js, no bash required.
  */
 
@@ -62,7 +63,24 @@ if (fs.existsSync(beadsDir)) {
   }
 }
 
-// 2. Patterns reminder
+// 2. Available tasks (bd ready)
+if (fs.existsSync(beadsDir)) {
+  try {
+    const ready = execSync('bd ready', {
+      encoding: 'utf8',
+      cwd,
+      timeout: 8000,
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+    if (ready) {
+      parts.push('Available tasks:\n' + ready);
+    }
+  } catch {
+    // bd not installed or bd ready failed — skip silently
+  }
+}
+
+// 3. Patterns reminder
 const patternsPath = path.join(cwd, '.context', 'patterns.md');
 if (fs.existsSync(patternsPath)) {
   const size = fs.statSync(patternsPath).size;
@@ -71,7 +89,7 @@ if (fs.existsSync(patternsPath)) {
   }
 }
 
-// 3. Context recovery hint
+// 4. Context recovery hint
 if (fs.existsSync(beadsDir)) {
   parts.push(
     'If resuming work on a specific task, run `bd show {ID}` to recover context.\n' +
@@ -79,7 +97,7 @@ if (fs.existsSync(beadsDir)) {
   );
 }
 
-// 4. Shared-contracts submodule change detection
+// 5. Shared-contracts submodule change detection
 const sharedDir = path.join(cwd, 'shared');
 if (fs.existsSync(sharedDir)) {
   try {

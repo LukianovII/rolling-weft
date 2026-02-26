@@ -21,6 +21,110 @@ const { spawnSync } = require('child_process');
 
 const frameworkRoot = path.resolve(__dirname, '..');
 
+// --- Check mode: verify environment health ---
+if (process.argv.includes('--check')) {
+  const targetArg = process.argv.slice(2).find(a => a !== '--check');
+  const projectRoot = targetArg ? path.resolve(targetArg) : process.cwd();
+
+  console.log('Rolling Weft — environment check');
+  console.log('  Project: ' + projectRoot);
+  console.log('');
+
+  let ok = true;
+
+  // Node.js
+  console.log('  [✓] Node.js ' + process.version);
+
+  // bd
+  const bdCheck = spawnSync('bd', ['--version'], { stdio: 'pipe', shell: true });
+  if (bdCheck.status === 0) {
+    console.log('  [✓] bd ' + (bdCheck.stdout || '').toString().trim().replace(/^bd\s+(version\s+)?/i, ''));
+  } else {
+    console.log('  [✗] bd not found — install: npm install -g @beads/bd');
+    ok = false;
+  }
+
+  // dolt
+  const doltCheck = spawnSync('dolt', ['version'], { stdio: 'pipe', shell: true });
+  if (doltCheck.status === 0) {
+    console.log('  [✓] dolt ' + (doltCheck.stdout || '').toString().trim().replace(/^dolt version\s*/i, ''));
+  } else {
+    console.log('  [✗] dolt not found — install: https://docs.dolthub.com/introduction/installation');
+    ok = false;
+  }
+
+  // dolt sql-server
+  const portCheck = spawnSync('node', ['-e', [
+    'const n=require("net"),s=new n.Socket();',
+    's.setTimeout(500);',
+    's.on("connect",()=>{s.destroy();process.exit(0)});',
+    's.on("timeout",()=>{s.destroy();process.exit(1)});',
+    's.on("error",()=>process.exit(1));',
+    's.connect(3307,"127.0.0.1");',
+  ].join('')], { stdio: 'pipe', timeout: 1500 });
+  if (portCheck.status === 0) {
+    console.log('  [✓] dolt sql-server running (port 3307)');
+  } else {
+    console.log('  [✗] dolt sql-server not reachable on port 3307');
+    ok = false;
+  }
+
+  // .beads/
+  const beadsDir = path.join(projectRoot, '.beads');
+  if (fs.existsSync(beadsDir)) {
+    console.log('  [✓] .beads/ initialized');
+  } else {
+    console.log('  [✗] .beads/ not found — run: bd init');
+    ok = false;
+  }
+
+  // .claude/settings.json with hooks
+  const settingsPath = path.join(projectRoot, '.claude', 'settings.json');
+  if (fs.existsSync(settingsPath)) {
+    try {
+      const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+      if (settings.hooks) {
+        console.log('  [✓] .claude/settings.json has hooks configured');
+      } else {
+        console.log('  [✗] .claude/settings.json exists but has no hooks — re-run setup');
+        ok = false;
+      }
+    } catch {
+      console.log('  [✗] .claude/settings.json is not valid JSON — re-run setup');
+      ok = false;
+    }
+  } else {
+    console.log('  [✗] .claude/settings.json not found — run setup first');
+    ok = false;
+  }
+
+  // hooks/scripts/
+  const hooksDir = path.join(projectRoot, 'hooks', 'scripts');
+  if (fs.existsSync(hooksDir)) {
+    const scripts = fs.readdirSync(hooksDir).filter(f => f.endsWith('.js'));
+    console.log('  [✓] hooks/scripts/ (' + scripts.length + ' scripts)');
+  } else {
+    console.log('  [✗] hooks/scripts/ not found — run setup');
+    ok = false;
+  }
+
+  // CLAUDE.md
+  if (fs.existsSync(path.join(projectRoot, 'CLAUDE.md'))) {
+    console.log('  [✓] CLAUDE.md exists');
+  } else {
+    console.log('  [✗] CLAUDE.md not found — run setup');
+    ok = false;
+  }
+
+  console.log('');
+  if (ok) {
+    console.log('All checks passed.');
+  } else {
+    console.log('Some checks failed — see above.');
+  }
+  process.exit(ok ? 0 : 1);
+}
+
 // --- Resolve target project path ---
 const targetArg = process.argv[2];
 if (!targetArg) {
@@ -28,9 +132,11 @@ if (!targetArg) {
   console.error('');
   console.error('Usage:');
   console.error('  node setup/setup.js <path-to-project>');
+  console.error('  node setup/setup.js --check [path-to-project]');
   console.error('');
   console.error('Example:');
   console.error('  node setup/setup.js C:\\projects\\my-app');
+  console.error('  node setup/setup.js --check C:\\projects\\my-app');
   process.exit(1);
 }
 
