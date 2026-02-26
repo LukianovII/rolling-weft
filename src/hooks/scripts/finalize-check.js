@@ -29,7 +29,11 @@ process.stdin.on('end', () => {
         '4. DESIGN-DOC DRIFT: Do any FINDINGs reveal design-doc inconsistencies?',
         '   If yes → update .designs/ (minor) or update shared/.designs/ + notify team (breaking).',
         '',
-        '5. SPAWN: Does finalize reveal new work? → bd create with --deps',
+        '5. LABELS: Does this bead have labels matching its domain tags?',
+        '   Run `bd label list {ID}`. If empty, add labels: `bd label add {ID} {domain}`.',
+        '   Labels should mirror the [tags] used in FINDING/LEARNED comments.',
+        '',
+        '6. SPAWN: Does finalize reveal new work? → bd create with --deps --labels',
       ].join('\n');
 
       console.log(JSON.stringify({ systemMessage: message }));

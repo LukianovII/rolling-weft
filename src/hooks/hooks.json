@@ -3,14 +3,14 @@
     "SessionStart": [
       {
         "hooks": [
-          { "type": "command", "command": "node hooks/scripts/session-start.js" }
+          { "type": "command", "command": "node .hooks/scripts/session-start.js" }
         ]
       }
     ],
     "PreCompact": [
       {
         "hooks": [
-          { "type": "command", "command": "node hooks/scripts/pre-compact.js" }
+          { "type": "command", "command": "node .hooks/scripts/pre-compact.js" }
         ]
       }
     ],
@@ -18,8 +18,8 @@
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": "node hooks/scripts/pre-commit.js" },
-          { "type": "command", "command": "node hooks/scripts/finalize-check.js" }
+          { "type": "command", "command": "node .hooks/scripts/pre-commit.js" },
+          { "type": "command", "command": "node .hooks/scripts/finalize-check.js" }
         ]
       }
     ],
@@ -27,8 +27,8 @@
       {
         "matcher": "Bash",
         "hooks": [
-          { "type": "command", "command": "node hooks/scripts/knowledge-capture.js" },
-          { "type": "command", "command": "node hooks/scripts/record-enforcement.js" }
+          { "type": "command", "command": "node .hooks/scripts/knowledge-capture.js" },
+          { "type": "command", "command": "node .hooks/scripts/record-enforcement.js" }
         ]
       }
     ]

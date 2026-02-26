@@ -98,13 +98,13 @@ if (process.argv.includes('--check')) {
     ok = false;
   }
 
-  // hooks/scripts/
-  const hooksDir = path.join(projectRoot, 'hooks', 'scripts');
+  // .hooks/scripts/
+  const hooksDir = path.join(projectRoot, '.hooks', 'scripts');
   if (fs.existsSync(hooksDir)) {
     const scripts = fs.readdirSync(hooksDir).filter(f => f.endsWith('.js'));
-    console.log('  [✓] hooks/scripts/ (' + scripts.length + ' scripts)');
+    console.log('  [✓] .hooks/scripts/ (' + scripts.length + ' scripts)');
   } else {
-    console.log('  [✗] hooks/scripts/ not found — run setup');
+    console.log('  [✗] .hooks/scripts/ not found — run setup');
     ok = false;
   }
 
@@ -225,13 +225,13 @@ copyDir(
 );
 console.log('  +  .claude/skills/');
 
-// Hook scripts → hooks/scripts/
+// Hook scripts → .hooks/scripts/
 copyDir(
   path.join(frameworkRoot, 'hooks', 'scripts'),
-  path.join(projectRoot, 'hooks', 'scripts'),
+  path.join(projectRoot, '.hooks', 'scripts'),
   true
 );
-console.log('  +  hooks/scripts/');
+console.log('  +  .hooks/scripts/');
 
 // ---------------------------------------------------------------------------
 // Step 3: Initialize beads

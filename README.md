@@ -168,7 +168,7 @@ graph LR
 
 ```bash
 cd my-app
-git add CLAUDE.md constitution.md .context/ .designs/ .claude/ hooks/ .beads/
+git add CLAUDE.md constitution.md .context/ .designs/ .claude/ .hooks/ .beads/
 git commit -m "Add Rolling Weft"
 ```
 
@@ -293,7 +293,7 @@ constitution.md              ← architectural gates (checked before decisions)
 
 .beads/                      ← task tracker state (managed by bd)
 
-hooks/
+.hooks/
 └── scripts/
     ├── session-start.js     ← bd prime + patterns.md reminder
     ├── pre-commit.js        ← remind to update beads before git commit
@@ -515,7 +515,7 @@ If installed via Go: check that `$GOPATH/bin` (or `$HOME/go/bin`) is in your PAT
 Hooks are registered in `.claude/settings.json`. If they're not running:
 1. Check that `.claude/settings.json` exists and contains hook entries
 2. Re-run `setup.js` — it regenerates hook configuration on every run
-3. Make sure hooks scripts exist at `hooks/scripts/` in your project root
+3. Make sure hooks scripts exist at `.hooks/scripts/` in your project root
 
 ---
 

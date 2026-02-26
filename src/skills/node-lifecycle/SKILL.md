@@ -114,7 +114,7 @@ Work on this node is done (or abandoned). Checklist:
 
 5. **Spawn new nodes** if finalize reveals new work:
    ```
-   bd create "Implement batch fetcher with retry" --deps {current-ID}
+   bd create "Implement batch fetcher with retry" --deps {current-ID} --labels com,vendorx
    ```
 
 6. Close:
@@ -142,6 +142,23 @@ bd comment {ID} "ASSUMPTION [dotnet]: using int for PK (guid may be needed for m
 Tag examples: `[com]`, `[sql]`, `[dotnet]`, `[rust]`, `[kafka]`, `[rest]`, `[grpc]`, `[vendorx]`
 No semantic tags like `[currency-conversion]` — keep to stack/domain level.
 
+**Labels** — bead-level metadata for search and filtering via `bd label list` / `bd ready`.
+Same domain vocabulary as tags, but applied to the bead itself (not to individual comments).
+
+Add labels at creation:
+```
+bd create "Fix COM timeout on batch call" --labels com,vendorx
+```
+
+Add labels during work when scope becomes clearer:
+```
+bd label add {ID} sql
+```
+
+Labels mirror the tags you use in comments. If your FINDINGs use `[com, vendorx]`,
+the bead should carry labels `com`, `vendorx`. Keep labels updated — they enable
+`bd ready` filtering and cross-bead search that comment tags alone cannot provide.
+
 ## Recovery Patterns
 
 ### Abandon
@@ -167,7 +184,7 @@ record-discipline was violated — report what FINDING is missing.
 ### Revert
 Merged code breaks another module.
 ```
-bd create "Revert: {original title}" --deps {original-ID}
+bd create "Revert: {original title}" --deps {original-ID} --labels {relevant-domains}
 bd comment {new-ID} "FINDING: merge {commit} broke {what}. Root cause: {reason}"
 → revert commit → bd close {new-ID}
 → LEARNED in original node (or integration-repo if cross-module)

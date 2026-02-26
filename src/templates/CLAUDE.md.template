@@ -55,6 +55,11 @@ Every piece of knowledge has exactly one destination:
 **Tags** — domain/stack level, 1-3 per record, lowercase:
 `[com]`, `[sql]`, `[dotnet]`, `[kafka]`, `[rest]`, `[grpc]`, `[vendorx]`
 
+**Labels** — same domain vocabulary, applied to the bead itself (not comments).
+Add at creation (`bd create "title" --labels com,sql`) or during work (`bd label add {ID} kafka`).
+Labels mirror the tags in your comments — if you write `[com, vendorx]` in FINDINGs,
+the bead should carry labels `com`, `vendorx`.
+
 ## Node Lifecycle (Summary)
 
 Each task follows: **plan** → [**discover**] → **investigate** → [**discuss** → **approve** → **probe** → **record**]* → **finalize**
