@@ -1,6 +1,6 @@
 ---
 name: onboarding
-description: Project inception session — establishes what the project is before any code is written. Use once, at project start, to fill CLAUDE.md Project Context, seed constitution.md, sketch .designs/index.md, and create the root bead. Not a form — a conversation.
+description: Project inception session — establishes what the project is before any code is written. Primarily used once at project start to fill CLAUDE.md Project Context, seed constitution.md, sketch .designs/index.md, and create the root bead. Can be re-scoped for major new modules. Not a form — a conversation.
 ---
 
 # Onboarding

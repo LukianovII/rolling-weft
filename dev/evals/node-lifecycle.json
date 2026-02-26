@@ -1,0 +1,22 @@
+[
+  {"query": "Let's start working on the payment integration task. Create a bead for it.", "should_trigger": true},
+  {"query": "I just ran the test and it failed with a timeout error. Record this finding.", "should_trigger": true},
+  {"query": "Before we close this bead, let's review all the assumptions we made.", "should_trigger": true},
+  {"query": "We've been going in circles for 8 iterations without progress. What should we do?", "should_trigger": true},
+  {"query": "I lost context after a compact. Help me recover what we were working on from the bead.", "should_trigger": true},
+  {"query": "The probe showed that the API returns 429 when batch size exceeds 50. Record this as a FINDING.", "should_trigger": true},
+  {"query": "We need to pause this task and switch to something else. What do we need to do before pausing?", "should_trigger": true},
+  {"query": "This task is a dead end, the approach doesn't work. Let's abandon it properly.", "should_trigger": true},
+  {"query": "I want to finalize this bead. Run through the checklist before closing.", "should_trigger": true},
+  {"query": "We found that the vendor SDK has a batch limit. Should this be a FINDING or a LEARNED?", "should_trigger": true},
+  {"query": "Read the file src/utils/parser.ts and explain what it does.", "should_trigger": false},
+  {"query": "Fix the typo in the README on line 42.", "should_trigger": false},
+  {"query": "Run npm install and tell me if there are any vulnerabilities.", "should_trigger": false},
+  {"query": "What's the difference between gRPC and REST for our use case?", "should_trigger": false},
+  {"query": "Create a new React component for the login form.", "should_trigger": false},
+  {"query": "Help me write unit tests for the payment module.", "should_trigger": false},
+  {"query": "Search the codebase for all uses of the deprecated fetchData function.", "should_trigger": false},
+  {"query": "Refactor this function to use async/await instead of callbacks.", "should_trigger": false},
+  {"query": "What does the error code ECONNREFUSED mean?", "should_trigger": false},
+  {"query": "Set up the project with setup.js and fill in the initial context.", "should_trigger": false}
+]

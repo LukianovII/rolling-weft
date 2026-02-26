@@ -1,0 +1,22 @@
+[
+  {"query": "Create a design document for the new notification service that communicates with the backend over gRPC.", "should_trigger": true},
+  {"query": "The payment module's contract changed — amount is now decimal instead of int. Update the design doc.", "should_trigger": true},
+  {"query": "I just found that the actual API returns different field types than what our design doc says. We need to fix the drift.", "should_trigger": true},
+  {"query": "We're adding a new module boundary between the order service and the inventory service. Document the contract.", "should_trigger": true},
+  {"query": "This FINDING shows the gRPC response has a new required field. That's a breaking change — update .designs/.", "should_trigger": true},
+  {"query": "Create a vertical slice document for the COM bridge module with the YAML contract format.", "should_trigger": true},
+  {"query": "The index.md system overview is outdated. Add the new Kafka module to the architecture diagram.", "should_trigger": true},
+  {"query": "We need to add a cross-module invariant: all monetary amounts must use decimal(18,4). Where does this go?", "should_trigger": true},
+  {"query": "My code change affects the shared interface between two modules. Should I update the design docs?", "should_trigger": true},
+  {"query": "Sketch a Mermaid sequence diagram for the auth flow between client, API gateway, and identity service.", "should_trigger": true},
+  {"query": "Fix the null pointer exception in the user service.", "should_trigger": false},
+  {"query": "Write unit tests for the calculateTotal function.", "should_trigger": false},
+  {"query": "Set up constitution.md with the architectural gates for this project.", "should_trigger": false},
+  {"query": "Investigate why the vendor API returns error code 810.", "should_trigger": false},
+  {"query": "The context is too large, let's compact it.", "should_trigger": false},
+  {"query": "Create a new bead for the refactoring task.", "should_trigger": false},
+  {"query": "Update the README with installation instructions.", "should_trigger": false},
+  {"query": "Help me write a Dockerfile for the backend service.", "should_trigger": false},
+  {"query": "Review the last 5 commits and summarize the changes.", "should_trigger": false},
+  {"query": "Add error handling to the database connection retry logic.", "should_trigger": false}
+]

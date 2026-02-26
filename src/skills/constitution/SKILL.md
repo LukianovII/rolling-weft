@@ -1,6 +1,6 @@
 ---
 name: constitution
-description: Guided setup and revision of constitution.md — turns the template into a real architectural gate document for the project. Use when setting up a new project, onboarding, or when new constraints are discovered.
+description: Guided setup and revision of constitution.md — turns the template into a real architectural gate document for the project. Use when setting up a new project, onboarding, or when new constraints are discovered. Also use when a FINDING or LEARNED reveals a permanent architectural constraint that should apply to all future work in this area.
 ---
 
 # Constitution Setup

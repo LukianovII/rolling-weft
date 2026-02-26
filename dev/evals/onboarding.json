@@ -1,0 +1,22 @@
+[
+  {"query": "I just ran setup.js on a brand new project. Let's do the inception session to establish what we're building.", "should_trigger": true},
+  {"query": "CLAUDE.md Project Context is still a placeholder. Let's fill it in with a proper conversation about the project.", "should_trigger": true},
+  {"query": "We're starting a completely new project from scratch. Help me set up the initial context — what is this project, who is it for, what are the constraints.", "should_trigger": true},
+  {"query": "Let's establish what we're building before writing any code. I want to define the IFR and map the system context.", "should_trigger": true},
+  {"query": "We're adding a major new module to the project that needs its own context. Let's do a scoped onboarding for it.", "should_trigger": true},
+  {"query": "The project has no CLAUDE.md context, no constitution, no design docs. Let's start from the beginning.", "should_trigger": true},
+  {"query": "I need to set up a new project with Rolling Weft. Walk me through the inception conversation.", "should_trigger": true},
+  {"query": "Create the root bead and seed the initial project context based on what we discuss.", "should_trigger": true},
+  {"query": "Let's define the ideal final result for this project and map out the tensions and constraints.", "should_trigger": true},
+  {"query": "This project was just initialized. Let's have the conversation to figure out what we're actually building.", "should_trigger": true},
+  {"query": "Fix the login bug — users get a 403 after session expires.", "should_trigger": false},
+  {"query": "Add a new API endpoint for fetching user preferences.", "should_trigger": false},
+  {"query": "Investigate why the gRPC connection drops under load.", "should_trigger": false},
+  {"query": "Update the design document for the notification service.", "should_trigger": false},
+  {"query": "Let's review the assumptions before closing this bead.", "should_trigger": false},
+  {"query": "Save findings and do a compound pass before compacting.", "should_trigger": false},
+  {"query": "Set up the constitution gates for COM threading constraints.", "should_trigger": false},
+  {"query": "Create a bead for the payment integration task.", "should_trigger": false},
+  {"query": "Run the test suite and fix any failing tests.", "should_trigger": false},
+  {"query": "Help me optimize the database query that's causing slow page loads.", "should_trigger": false}
+]

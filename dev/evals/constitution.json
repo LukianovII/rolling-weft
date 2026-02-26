@@ -1,0 +1,22 @@
+[
+  {"query": "Let's set up the constitution.md for this project. The template has placeholders that need to be filled.", "should_trigger": true},
+  {"query": "We discovered that COM calls must always happen on the STA thread. This is a permanent constraint — add it to the constitution.", "should_trigger": true},
+  {"query": "A FINDING revealed that the database can't handle more than 1000 concurrent connections. This should be an architectural gate.", "should_trigger": true},
+  {"query": "Let's do a periodic review of our constitution gates to make sure they still match reality.", "should_trigger": true},
+  {"query": "This LEARNED about decimal precision requirements should be a permanent rule, not just a gotcha in patterns.md.", "should_trigger": true},
+  {"query": "The constitution still has placeholder text from the template. Let's go through it section by section.", "should_trigger": true},
+  {"query": "We keep violating the same constraint. It should be written down as a gate so the agent checks it automatically.", "should_trigger": true},
+  {"query": "A new platform limitation was discovered: Windows named pipes have a 64KB buffer limit. Add this as a gate.", "should_trigger": true},
+  {"query": "Set up the architectural gates for our new microservices project — we use gRPC and Kafka.", "should_trigger": true},
+  {"query": "The constitution says gRPC timeout is 30s but we changed it to 60s last sprint. Update the gate.", "should_trigger": true},
+  {"query": "Create a design document for the payment processing module.", "should_trigger": false},
+  {"query": "Investigate how the vendor API handles authentication.", "should_trigger": false},
+  {"query": "Fix the bug where users can't log in after password reset.", "should_trigger": false},
+  {"query": "Run the test suite and report failures.", "should_trigger": false},
+  {"query": "Save all findings before compacting the context.", "should_trigger": false},
+  {"query": "Create a new bead for the notification feature.", "should_trigger": false},
+  {"query": "Add a gotcha about the batch limit to patterns.md.", "should_trigger": false},
+  {"query": "Write a database migration for the new schema.", "should_trigger": false},
+  {"query": "Start the onboarding session for a brand new project.", "should_trigger": false},
+  {"query": "Refactor the error handling to use a centralized error class.", "should_trigger": false}
+]

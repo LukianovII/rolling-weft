@@ -1,6 +1,6 @@
 ---
 name: investigation
-description: Investigation-first discipline — deep research, vendor docs, sub-agent delegation, knowledge lookup. Use before writing code for unfamiliar APIs, proprietary systems, or complex integrations.
+description: Investigation-first discipline — deep research, vendor docs, sub-agent delegation, knowledge lookup. Use before writing code for unfamiliar APIs, proprietary systems, or complex integrations. Also use when encountering bugs with unclear root causes, cross-module interactions, or any task where jumping straight to code risks wasted iterations.
 ---
 
 # Investigation
@@ -24,7 +24,6 @@ Before doing any new research, check what's already known:
 ```
 bd show {ID}          → FINDINGs from previous iterations on this task
 bd prime                     → context from related tasks
-bd search --label learned:{tag}  → LEARNEDs from other tasks in this domain
 ```
 Then check project files:
 - `.context/patterns.md` — known gotchas for this domain

@@ -2,7 +2,8 @@
 /.claude/
 
 # Development workspace — local only, not published
-/dev/
+/dev/*
+!/dev/evals/
 /CLAUDE.md
 
 # OS

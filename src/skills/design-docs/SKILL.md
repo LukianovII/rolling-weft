@@ -1,6 +1,6 @@
 ---
 name: design-docs
-description: Design document management — creating, updating, and maintaining .designs/ files. Use when creating or modifying cross-module contracts, system architecture docs, or vertical slices.
+description: Design document management — creating, updating, and maintaining .designs/ files. Use when creating or modifying cross-module contracts, system architecture docs, or vertical slices. Also use whenever code changes affect a module boundary or shared interface, or when a FINDING reveals that code differs from the documented contract.
 ---
 
 # Design Documents

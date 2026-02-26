@@ -1,6 +1,6 @@
 ---
 name: node-lifecycle
-description: Core development workflow — task phases, findings, assumptions, and finalization rules. Use when working on any tracked task (bead).
+description: Core development workflow — task phases, findings, assumptions, and finalization rules. Use when starting a new task, recording findings from a probe, reviewing assumptions, closing or pausing work, or whenever the agent needs to follow the probe→record cycle. Also use when checking for stalling patterns or recovering from context loss on a tracked bead.
 ---
 
 # Node Lifecycle

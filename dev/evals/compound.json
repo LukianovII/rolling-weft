@@ -1,0 +1,22 @@
+[
+  {"query": "The context is getting huge, let's save what we've learned before running /compact.", "should_trigger": true},
+  {"query": "I'm ending this session. Make sure all the knowledge we found is saved somewhere persistent.", "should_trigger": true},
+  {"query": "Before compacting, extract the important findings into patterns.md and update the beads.", "should_trigger": true},
+  {"query": "We just spent two hours debugging the COM threading issue. Save everything we learned before it gets lost.", "should_trigger": true},
+  {"query": "I want to switch to a completely different task now. Let's preserve context from this one first.", "should_trigger": true},
+  {"query": "Run /compact now.", "should_trigger": true},
+  {"query": "The conversation is getting long. What should we do before compressing it?", "should_trigger": true},
+  {"query": "We found a lot of gotchas during this session. Where should each one be recorded?", "should_trigger": true},
+  {"query": "Save the current session state — I need to come back to this tomorrow.", "should_trigger": true},
+  {"query": "Let's do a compound pass before this context gets too large to manage.", "should_trigger": true},
+  {"query": "Read the file src/config.ts and tell me what database it connects to.", "should_trigger": false},
+  {"query": "Create a new bead for the login feature.", "should_trigger": false},
+  {"query": "Investigate how the vendor API handles pagination.", "should_trigger": false},
+  {"query": "Update the design doc for the payment module.", "should_trigger": false},
+  {"query": "Fix the failing test in the auth module.", "should_trigger": false},
+  {"query": "Set up the project constitution with architectural gates.", "should_trigger": false},
+  {"query": "What's the best way to handle errors in this gRPC service?", "should_trigger": false},
+  {"query": "Add input validation to the registration form.", "should_trigger": false},
+  {"query": "Review my pull request and suggest improvements.", "should_trigger": false},
+  {"query": "Help me understand how the event sourcing pattern works in this codebase.", "should_trigger": false}
+]

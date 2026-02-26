@@ -1,6 +1,6 @@
 ---
 name: compound
-description: Knowledge extraction before context compression. Use before /compact, when context is getting large, or when ending a session. Ensures knowledge survives context loss.
+description: Knowledge extraction before context compression. Always use before running /compact. Also use when switching between unrelated tasks, ending a long session, after any debugging session that produced significant findings, or when context is getting large. Ensures knowledge survives context loss — the cost of writing is near-zero, the cost of forgetting is high.
 ---
 
 # Compound Before Compact

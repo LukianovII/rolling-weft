@@ -1,0 +1,22 @@
+[
+  {"query": "I need to integrate with the VendorX API but their docs are terrible. Research how their authentication works before we write any code.", "should_trigger": true},
+  {"query": "This bug keeps happening intermittently and I have no idea what causes it. Let's investigate before trying random fixes.", "should_trigger": true},
+  {"query": "We need to call a COM interop method but I'm not sure about the threading model. Look into it.", "should_trigger": true},
+  {"query": "Before implementing the Kafka consumer, read the vendor documentation and extract the relevant constraints.", "should_trigger": true},
+  {"query": "The error only happens when two modules interact. Investigate the cross-module data flow to find the root cause.", "should_trigger": true},
+  {"query": "I want to use this new SDK but I've never worked with it. Research how it handles batch operations.", "should_trigger": true},
+  {"query": "This gRPC call fails with code 14 but only under load. We need to trace through the call chain to understand why.", "should_trigger": true},
+  {"query": "Check what existing FINDINGs and LEARNEDs we have about the payment gateway before starting new work.", "should_trigger": true},
+  {"query": "The error message is cryptic. Delegate reading through the 200-page SDK reference to a sub-agent and extract what we need.", "should_trigger": true},
+  {"query": "We're about to integrate with a proprietary system we haven't used before. What do we need to research first?", "should_trigger": true},
+  {"query": "Add a new endpoint to the Express router for user profile updates.", "should_trigger": false},
+  {"query": "The button color should be blue, not green. Fix it in the CSS.", "should_trigger": false},
+  {"query": "Run the test suite and tell me which tests are failing.", "should_trigger": false},
+  {"query": "Create a design document for the new notification system.", "should_trigger": false},
+  {"query": "Compact the context, it's getting too large.", "should_trigger": false},
+  {"query": "Let's finalize this bead and close it.", "should_trigger": false},
+  {"query": "Write a migration script to add the email column to the users table.", "should_trigger": false},
+  {"query": "Help me rename the getUserById function to findUserById across the codebase.", "should_trigger": false},
+  {"query": "Set up the constitution.md for this new project.", "should_trigger": false},
+  {"query": "Deploy the latest build to staging and verify it works.", "should_trigger": false}
+]
