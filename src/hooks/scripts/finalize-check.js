@@ -33,7 +33,11 @@ process.stdin.on('end', () => {
         '   Run `bd label list {ID}`. If empty, add labels: `bd label add {ID} {domain}`.',
         '   Labels should mirror the [tags] used in FINDING/LEARNED comments.',
         '',
-        '6. SPAWN: Does finalize reveal new work? → bd create with --deps --labels',
+        '6. CONSTITUTION: Did any changes touch architecture (new dependency, threading,',
+        '   data model, external API contract)? If yes — read constitution.md and verify',
+        '   no rules were violated. Violations require documented justification.',
+        '',
+        '7. SPAWN: Does finalize reveal new work? → bd create with --deps --labels',
       ].join('\n');
 
       console.log(JSON.stringify({ systemMessage: message }));
