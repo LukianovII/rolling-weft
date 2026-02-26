@@ -6,6 +6,7 @@
  * Windows-compatible: pure Node.js, no bash required.
  */
 
+const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -77,6 +78,20 @@ process.stdin.on('end', () => {
 
     // Append entry
     fs.appendFileSync(knowledgeFile, entry + '\n');
+
+    // Tag the bead with learned:{domain} labels for native bd search
+    const domainTags = tags.filter(t => t !== 'learned');
+    for (const tag of domainTags) {
+      try {
+        spawnSync('bd', ['label', 'add', beadId, `learned:${tag}`], {
+          cwd,
+          timeout: 5000,
+          stdio: 'ignore',
+        });
+      } catch {
+        // bd not available or label failed — not critical
+      }
+    }
 
     // Rotation: archive oldest 500 when file exceeds 1000 lines
     try {

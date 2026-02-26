@@ -24,6 +24,7 @@ Before doing any new research, check what's already known:
 ```
 bd show {ID}          → FINDINGs from previous iterations on this task
 bd prime                     → context from related tasks
+bd search --label learned:{tag}  → LEARNEDs from other tasks in this domain
 ```
 Then check project files:
 - `.context/patterns.md` — known gotchas for this domain
