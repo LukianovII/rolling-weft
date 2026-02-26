@@ -60,8 +60,9 @@ Skip discovery when the task is already clear and narrow.
 ### Investigate
 Read-only. Gather knowledge before touching code.
 - If Discover produced SCOPE: use it to focus the search
+- Check `.context/patterns.md` for known gotchas (loaded at session start)
+- Search beads for related LEARNED by domain: `bd search --label {domain} --all`
 - Read documentation, forums, existing FINDING/LEARNED from related beads
-- Check `.context/patterns.md` for known gotchas
 - Delegate heavy reads to sub-agent (see `@skills/investigation`)
 - **Do not write code yet** — only collect information
 
@@ -102,11 +103,15 @@ Work on this node is done (or abandoned). Checklist:
    → each one: confirmed? contradicted? still open?
    ```
 
-2. **Write LEARNED** for gotchas discovered during this work:
+2. **Write LEARNED** for gotchas discovered during this work — to **both** storages:
    ```
    bd comment {ID} "LEARNED [com, vendorx]: batch limit 100 per call, undocumented.
      ~600ms latency per call. For >1000 elements use parallel batching."
    ```
+   Then add the same gotcha to `.context/patterns.md`.
+   Beads LEARNED is searchable by labels (`bd search --label com`).
+   patterns.md is loaded at session start before any bead is opened.
+   Neither replaces the other — always write to both.
 
 3. **Update design-doc** if findings change a contract (see `@skills/design-docs`)
 

@@ -14,6 +14,8 @@ Every discovered gotcha becomes a LEARNED. Don't defer — write during the work
 bd comment {ID} "FINDING [tag]: exact observation with field names, error codes, behavior"
 bd comment {ID} "LEARNED [tag]: generalized conclusion, gotcha for future use"
 ```
+Every `[tag]` in a comment → matching label on the bead: `bd label add {ID} {tag}`.
+Tags are text inside comments; labels are bead metadata for `bd search --label {tag}`.
 
 **Mark assumptions.** Any decision without full verification:
 ```
@@ -29,17 +31,24 @@ against `constitution.md`. Violations require explicit justification.
 
 ## Knowledge Routing
 
-Every piece of knowledge has exactly one destination:
+Every piece of knowledge has exactly one destination — except LEARNED, which goes to **both** storages:
 
 | What | Where | Format |
 |------|-------|--------|
 | Probe result (exact data) | beads comment | `FINDING [tag]: ...` |
-| Gotcha for future sessions | beads comment + patterns.md | `LEARNED [tag]: ...` |
+| Gotcha for future sessions | **beads comment AND patterns.md** | `LEARNED [tag]: ...` |
 | Unverified decision | beads comment | `ASSUMPTION [tag]: ...` |
 | Task state, blocking, next steps | beads (`bd ready`, `bd prime`) | bd update/close/create |
 | Architecture decision (why) | `.designs/` or ADR | design-doc slice or decision record |
 | Module contract (types, fields) | `.designs/{module}.md` | YAML code block |
 | Cross-module invariant | `.designs/invariants.md` | Numbered rules |
+
+**LEARNED goes to both storages — always.** They serve different purposes:
+- **beads**: searchable by labels — `bd search --label com`, `bd list --label sql --all`
+- **patterns.md**: loaded at session start, available before any bead is opened
+
+Writing only to patterns.md loses label-based search. Writing only to beads
+loses visibility at session start. Neither replaces the other.
 
 **Project knowledge belongs in project files, not in auto-memory.**
 

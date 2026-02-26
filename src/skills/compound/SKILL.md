@@ -25,10 +25,13 @@ For each item, decide where it goes:
 
 | What | Where |
 |------|-------|
-| Verified gotcha, API surprise | `.context/patterns.md` |
 | Probe result (exact data) | `bd comment {ID} "FINDING [tag]: ..."` |
-| Generalized conclusion | `bd comment {ID} "LEARNED [tag]: ..."` |
+| Generalized conclusion | `bd comment {ID} "LEARNED [tag]: ..."` **AND** `.context/patterns.md` |
 | Contract change discovered | Update `.designs/{module}.md` |
+
+**LEARNED goes to both storages — always.**
+Beads: searchable by labels (`bd search --label com`).
+patterns.md: loaded at session start before any bead is opened.
 
 **Only save verified knowledge** — confirmed by testing or observed failure, not speculation.
 
@@ -97,3 +100,4 @@ The cost of writing is near-zero. The cost of forgetting is high.
 **Deferred:** "I'll write this up later" → often forgotten.
 **Duplicated:** New entry instead of updating existing one.
 **Skipping beads:** Forgetting to record stopping point — next session starts blind.
+**One storage only:** Writing LEARNED to patterns.md but not beads (loses label search), or to beads but not patterns.md (invisible at session start).
