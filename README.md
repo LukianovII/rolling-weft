@@ -1,7 +1,9 @@
 # Rolling Weft
 
-> **Status: early alpha.** Core concepts are stable, but file structure and
-> hook behavior may change between versions. Feedback welcome.
+> **Status: beta.** The process works — research before code, probe→record cycle,
+> knowledge persistence across sessions. Rough edges remain: the agent doesn't
+> always follow the process without reminders. File structure may change between
+> versions. Feedback welcome.
 
 Persistent project memory and structured development workflow for
 [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
