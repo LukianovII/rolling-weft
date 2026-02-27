@@ -24,6 +24,14 @@ real work is nonlinear. But three rules are always enforced.
    - Or is this node **suspended**? (user switches to other work, returns later)
    A suspended node is not blocked, but continues to block its parent epic.
 
+4. **One bead, one scope.** When separable new work surfaces during discussion —
+   spawn immediately, then continue with the current task:
+   ```
+   bd create "The new thing" --deps {current-ID} --labels {domain}
+   ```
+   Do not absorb it into the current bead. "We can do it while we're here" is scope creep.
+   This applies during Discuss, mid-investigation, anywhere — not only at Finalize.
+
 ## Phases
 
 ### Plan
@@ -74,6 +82,7 @@ Read-only. Gather knowledge before touching code.
 - Branching points:
   - **Prerequisite:** "We need X before we can continue" → new node, `bd dep add`
   - **Decomposition:** "This is too complex as one question" → current becomes epic, spawn N children
+  - **Scope expansion:** "We should also fix/add Y while we're here" → `bd create` for Y **first**, then continue with current bead. Never implement Y inline.
 
 **Approve:** Decision made, proceeding with chosen approach.
 
@@ -205,6 +214,7 @@ Patterns that signal the process is stalling:
 | ASSUMPTION > FINDING count | More guesses than tests | Strengthen investigate phase |
 | >3 BLOCKED in a row | Stuck on external decisions | Review scope or dependencies |
 | Node open >5 days, 0 FINDINGs | Idle, not researching | Prioritize or abandon |
+| Implementing beyond original scope | Absorbed adjacent tasks | Spawn bead, split commits |
 
 ## Retry Loop Detection
 
