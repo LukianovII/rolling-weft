@@ -44,7 +44,7 @@ They are the source of truth for cross-module contracts.
 ### Minor Change (clarification, fix, new example)
 Update the design-doc in the same commit as the code change:
 ```
-bd comment {ID} "FINDING [tag]: updated field X in .designs/{module}.md
+bd comments add {ID} "FINDING [tag]: updated field X in .designs/{module}.md
   (was: int, now: decimal — precision requirement from probe)"
 ```
 
@@ -54,12 +54,12 @@ Breaking changes require coordination:
 1. Update the contract in `shared/.designs/` (if using shared-contracts submodule)
    or in the local `.designs/` with a clear FINDING:
    ```
-   bd comment {ID} "FINDING [grpc]: BREAKING — amount changes from int to decimal(18,4).
+   bd comments add {ID} "FINDING [grpc]: BREAKING — amount changes from int to decimal(18,4).
      Affects: all modules consuming PaymentRequest"
    ```
 2. Record LEARNED:
    ```
-   bd comment {ID} "LEARNED [grpc]: contract changed, reason: {root cause from FINDING}"
+   bd comments add {ID} "LEARNED [grpc]: contract changed, reason: {root cause from FINDING}"
    ```
 3. Commit the contract change, push. Other modules will see the change via
    `shared/` submodule update (detected by session-start hook) or manual sync.

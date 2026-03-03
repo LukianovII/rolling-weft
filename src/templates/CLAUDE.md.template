@@ -11,15 +11,15 @@ check existing FINDING/LEARNED records in beads, read `.context/patterns.md`, th
 **Record findings immediately.** Every probe iteration leaves a FINDING in beads.
 Every discovered gotcha becomes a LEARNED. Don't defer — write during the work.
 ```
-bd comment {ID} "FINDING [tag]: exact observation with field names, error codes, behavior"
-bd comment {ID} "LEARNED [tag]: generalized conclusion, gotcha for future use"
+bd comments add {ID} "FINDING [tag]: exact observation with field names, error codes, behavior"
+bd comments add {ID} "LEARNED [tag]: generalized conclusion, gotcha for future use"
 ```
 Every `[tag]` in a comment → matching label on the bead: `bd label add {ID} {tag}`.
 Tags are text inside comments; labels are bead metadata for `bd search --label {tag}`.
 
 **Mark assumptions.** Any decision without full verification:
 ```
-bd comment {ID} "ASSUMPTION [tag]: what was assumed and why (alternative if wrong)"
+bd comments add {ID} "ASSUMPTION [tag]: what was assumed and why (alternative if wrong)"
 ```
 
 **Compound before compact.** Before `/compact`, extract knowledge to patterns.md,
@@ -77,6 +77,10 @@ Hard rules:
 1. Every probe must leave a FINDING (knowledge lost otherwise)
 2. Before `bd close`: review ALL ASSUMPTION records
 3. Before finalize: verify blocking status with user
+4. Claim before work, unclaim before switch:
+   - Start: `bd update {ID} --claim`
+   - Switch away: `bd update {ID} --status open --assignee ""`
+   - Check active: `bd show --current`
 
 Load skill `@skills/node-lifecycle` for full lifecycle details.
 

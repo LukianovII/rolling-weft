@@ -16,7 +16,7 @@ process.stdin.on('end', () => {
       const message = [
         'About to close a bead. Finalize checklist:',
         '',
-        '1. ASSUMPTIONS: Run `bd show {ID}` and review every ASSUMPTION record.',
+        '1. ASSUMPTIONS: Run `bd show --current` and review every ASSUMPTION record.',
         '   Each one: confirmed? contradicted? still unknown?',
         '',
         '2. BLOCKING STATUS: Ask the user:',

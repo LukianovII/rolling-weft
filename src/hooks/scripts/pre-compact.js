@@ -9,7 +9,7 @@ const message = [
   '',
   'Run the compound procedure before compaction:',
   '1. Extract new gotchas/patterns → .context/patterns.md',
-  '2. Record FINDINGs and LEARNEDs in beads (bd comment)',
+  '2. Record FINDINGs and LEARNEDs in beads (bd comments add)',
   '3. Update beads task state (bd update/close/create)',
   '4. Update .designs/ if any FINDINGs affect contracts',
   '',

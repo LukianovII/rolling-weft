@@ -121,7 +121,7 @@ bd create "Project: {title}"
 Then record the IFR as mandatory SCOPE:
 
 ```
-bd comment {ID} "SCOPE: IFR — {what ideal success looks like without constraints}.
+bd comments add {ID} "SCOPE: IFR — {what ideal success looks like without constraints}.
   Real constraints: {what actually limits us — stack, legacy, environment}.
   Done when: {observable definition of done}.
   Open questions: {what we don't know yet}"

@@ -83,7 +83,7 @@ A bad gate is:
 When a new constraint is discovered during work:
 
 ```
-bd comment {ID} "LEARNED [tag]: {constraint discovered}"
+bd comments add {ID} "LEARNED [tag]: {constraint discovered}"
 ```
 
 Then decide: is this a one-time gotcha (→ patterns.md) or a permanent

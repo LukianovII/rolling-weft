@@ -123,7 +123,7 @@ Return as structured markdown with exact field names and types.
 If a sub-agent hits a decision point during investigation:
 
 ```
-bd comment {ID} "BLOCKED: investigation found two possible approaches:
+bd comments add {ID} "BLOCKED: investigation found two possible approaches:
   A) {approach A — pros/cons}
   B) {approach B — pros/cons}
   Need user decision before proceeding."

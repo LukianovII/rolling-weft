@@ -11,7 +11,7 @@ real work is nonlinear. But three rules are always enforced.
 ## Hard Rules
 
 1. **Record after probe.** Every probe iteration must leave a FINDING.
-   No probe without `bd comment {ID} "FINDING [tag]: ..."`.
+   No probe without `bd comments add {ID} "FINDING [tag]: ..."`.
    Unrecorded probes are lost knowledge.
 
 2. **Review assumptions on finalize.** Before `bd close`, review every
@@ -31,6 +31,12 @@ real work is nonlinear. But three rules are always enforced.
    ```
    Do not absorb it into the current bead. "We can do it while we're here" is scope creep.
    This applies during Discuss, mid-investigation, anywhere — not only at Finalize.
+
+5. **Claim before work, unclaim before switch.** Only one bead may be claimed at a time.
+   - Start work: `bd update {ID} --claim` (atomic: sets assignee + in_progress)
+   - Switch away without closing: `bd update {ID} --status open --assignee ""`
+   - `bd show --current` always reflects what you are working on right now.
+   Leaving stale claims breaks `bd show --current` and multi-session continuity.
 
 ## Phases
 
@@ -57,7 +63,7 @@ the specific ambiguity, not from a fixed checklist.
 
 **If user answers** — record as scope context:
 ```
-bd comment {ID} "SCOPE: user confirmed — only COM side, backend unchanged.
+bd comments add {ID} "SCOPE: user confirmed — only COM side, backend unchanged.
   Constraint: must work with existing int PK. Done = test passes on target machine."
 ```
 
@@ -91,14 +97,14 @@ Two modes:
 - **Local:** Agent runs test directly → result → record FINDING
 - **Air-gapped:** Agent prepares build, user transfers to isolated machine, returns logs.
   ```
-  bd comment {ID} "PROBE-PREPARED: build abc123, run on {machine}, expect {what}"
+  bd comments add {ID} "PROBE-PREPARED: build abc123, run on {machine}, expect {what}"
   → [user transfers and returns logs]
   → agent analyzes logs → record FINDING
   ```
 
 **Record:** Write what happened.
 ```
-bd comment {ID} "FINDING [com, vendorx]: GetProducts returns Object[], not Product[].
+bd comments add {ID} "FINDING [com, vendorx]: GetProducts returns Object[], not Product[].
   Cast works for <100 elements, ArrayTypeMismatchException for >100."
 ```
 
@@ -114,7 +120,7 @@ Work on this node is done (or abandoned). Checklist:
 
 2. **Write LEARNED** for gotchas discovered during this work — to **both** storages:
    ```
-   bd comment {ID} "LEARNED [com, vendorx]: batch limit 100 per call, undocumented.
+   bd comments add {ID} "LEARNED [com, vendorx]: batch limit 100 per call, undocumented.
      ~600ms latency per call. For >1000 elements use parallel batching."
    ```
    Then add the same gotcha to `.context/patterns.md`.
@@ -148,9 +154,9 @@ Work on this node is done (or abandoned). Checklist:
 
 **Tags** — domain/stack level, in brackets, 1-3 per record:
 ```
-bd comment {ID} "FINDING [com, vendorx]: resultCode -1 without errorMessage"
-bd comment {ID} "LEARNED [sql, vendorx]: code 810 for RUB, not 643 (ISO 4217)"
-bd comment {ID} "ASSUMPTION [dotnet]: using int for PK (guid may be needed for merge)"
+bd comments add {ID} "FINDING [com, vendorx]: resultCode -1 without errorMessage"
+bd comments add {ID} "LEARNED [sql, vendorx]: code 810 for RUB, not 643 (ISO 4217)"
+bd comments add {ID} "ASSUMPTION [dotnet]: using int for PK (guid may be needed for merge)"
 ```
 
 Tag examples: `[com]`, `[sql]`, `[dotnet]`, `[rust]`, `[kafka]`, `[rest]`, `[grpc]`, `[vendorx]`
@@ -179,7 +185,7 @@ the bead should carry labels `com`, `vendorx`. Keep labels updated — they enab
 Research showed dead end. No successful result, but LEARNED is mandatory.
 ```
 bd close {ID} --reason abandoned
-bd comment {ID} "LEARNED [tag]: approach X doesn't work because Y.
+bd comments add {ID} "LEARNED [tag]: approach X doesn't work because Y.
   Alternatives: A (not tested), B (partially tested, see FINDING above)"
 ```
 
@@ -199,7 +205,7 @@ record-discipline was violated — report what FINDING is missing.
 Merged code breaks another module.
 ```
 bd create "Revert: {original title}" --deps {original-ID} --labels {relevant-domains}
-bd comment {new-ID} "FINDING: merge {commit} broke {what}. Root cause: {reason}"
+bd comments add {new-ID} "FINDING: merge {commit} broke {what}. Root cause: {reason}"
 → revert commit → bd close {new-ID}
 → LEARNED in original node (or integration-repo if cross-module)
 ```

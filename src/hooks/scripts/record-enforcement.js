@@ -2,7 +2,7 @@
 /**
  * PostToolUse (Bash) hook — reminds to record FINDING after probe-like commands.
  * Detects test runs, build commands, API calls that look like probe results
- * without a subsequent bd comment FINDING.
+ * without a subsequent bd comments add FINDING.
  * Windows-compatible: pure Node.js, no bash required.
  */
 
@@ -14,8 +14,8 @@ process.stdin.on('end', () => {
     const cmd = (data?.tool_input?.command || '');
     const output = (data?.tool_output?.stdout || '') + (data?.tool_output?.stderr || '');
 
-    // If this IS a bd comment FINDING — check for design-doc drift
-    if (cmd.includes('bd comment') && /FINDING/i.test(cmd)) {
+    // If this IS a bd comments add FINDING — check for design-doc drift
+    if (cmd.includes('bd comments add') && /FINDING/i.test(cmd)) {
       // Look for tags that typically involve shared contracts
       const contractTags = ['grpc', 'rest', 'kafka', 'protobuf', 'schema', 'contract', 'api'];
       const tagMatch = cmd.match(/\[([^\]]+)\]/);
@@ -67,7 +67,7 @@ process.stdin.on('end', () => {
       const message = [
         'Probe detected. Remember: every probe must leave a FINDING.',
         'Record the result:',
-        '  bd comment {ID} "FINDING [tag]: {exact observation — field names, error codes, behavior}"',
+        '  bd comments add {ID} "FINDING [tag]: {exact observation — field names, error codes, behavior}"',
       ].join('\n');
 
       console.log(JSON.stringify({ systemMessage: message }));

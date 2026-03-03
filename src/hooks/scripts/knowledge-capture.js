@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * PostToolUse (Bash) hook — captures LEARNED entries into knowledge.jsonl.
- * Detects: bd comment {BEAD_ID} "LEARNED: ..."
+ * Detects: bd comments add {BEAD_ID} "LEARNED: ..."
  * Extracts knowledge into .beads/memory/knowledge.jsonl for future recall.
  * Windows-compatible: pure Node.js, no bash required.
  */
@@ -17,13 +17,13 @@ process.stdin.on('end', () => {
     const data = JSON.parse(input);
     const cmd = data?.tool_input?.command || '';
 
-    // Only process bd comment commands with LEARNED
-    if (!cmd.includes('bd') || !cmd.includes('comment') || !cmd.includes('LEARNED:')) {
+    // Only process bd comments add commands with LEARNED
+    if (!cmd.includes('bd') || !cmd.includes('comments') || !cmd.includes('LEARNED:')) {
       return;
     }
 
-    // Extract bead ID: bd comment {ID} "LEARNED: ..."
-    const beadMatch = cmd.match(/bd\s+comment\s+([\w.-]+)\s+/);
+    // Extract bead ID: bd comments add {ID} "LEARNED: ..."
+    const beadMatch = cmd.match(/bd\s+comments\s+add\s+([\w.-]+)\s+/);
     if (!beadMatch) return;
     const beadId = beadMatch[1];
 

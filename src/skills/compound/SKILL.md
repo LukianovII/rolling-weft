@@ -25,8 +25,8 @@ For each item, decide where it goes:
 
 | What | Where |
 |------|-------|
-| Probe result (exact data) | `bd comment {ID} "FINDING [tag]: ..."` |
-| Generalized conclusion | `bd comment {ID} "LEARNED [tag]: ..."` **AND** `.context/patterns.md` |
+| Probe result (exact data) | `bd comments add {ID} "FINDING [tag]: ..."` |
+| Generalized conclusion | `bd comments add {ID} "LEARNED [tag]: ..."` **AND** `.context/patterns.md` |
 | Contract change discovered | Update `.designs/{module}.md` |
 
 **LEARNED goes to both storages — always.**

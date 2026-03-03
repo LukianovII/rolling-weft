@@ -89,12 +89,36 @@ if (fs.existsSync(patternsPath)) {
   }
 }
 
-// 4. Context recovery hint
+// 4. Context recovery — check for active bead via bd show --current
 if (fs.existsSync(beadsDir)) {
-  parts.push(
-    'If resuming work on a specific task, run `bd show {ID}` to recover context.\n' +
-    'Check for existing FINDING/ASSUMPTION records before starting new probes.'
-  );
+  try {
+    const current = execSync('bd show --current --json', {
+      encoding: 'utf8',
+      cwd,
+      timeout: 8000,
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+    if (current) {
+      const issue = JSON.parse(current);
+      const id = issue.id || issue.ID;
+      const title = issue.title || '';
+      if (id) {
+        parts.push(
+          `Active bead: ${id} "${title}"\n` +
+          `Run \`bd show ${id}\` to recover full context.\n` +
+          'Check for existing FINDING/ASSUMPTION records before starting new probes.\n' +
+          'If working on a DIFFERENT bead this session, unclaim first:\n' +
+          `  bd update ${id} --status open --assignee ""`
+        );
+      }
+    }
+  } catch {
+    // No current issue or bd not available — fall back to generic hint
+    parts.push(
+      'If resuming work on a specific task, run `bd show {ID}` to recover context.\n' +
+      'Check for existing FINDING/ASSUMPTION records before starting new probes.'
+    );
+  }
 }
 
 // 5. Shared-contracts submodule change detection
