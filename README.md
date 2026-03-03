@@ -221,15 +221,17 @@ If Discover produced a SCOPE, use it to focus the search.
 - **Discuss** — what approach do we try? Account for previous FINDINGs.
 - **Approve** — decision made, proceed.
 - **Probe** — isolated trial: prototype, API call, test run.
-- **Record** — `bd comment {ID} "FINDING [tag]: exact observation"`.
+- **Record** — `bd comments add {ID} "FINDING [tag]: exact observation"`.
   Every probe leaves a trace. Next iteration sees all previous results.
 
 **Finalize** — review assumptions, write LEARNEDs, update design-docs, close.
 
-Three hard rules (enforced by hooks):
+Five hard rules (enforced by hooks):
 1. Every probe must leave a FINDING
 2. Before closing: review all ASSUMPTION records
 3. Before closing: verify blocking status with user
+4. Claim before work, unclaim before switch (`bd update {ID} --claim` / `--status open --assignee ""`)
+5. One bead, one scope — new work spawns a new bead
 
 ### Knowledge Routing
 
@@ -237,9 +239,9 @@ Every piece of knowledge has one destination:
 
 | What                       | Where                    | Format                    |
 | -------------------------- | ------------------------ | ------------------------- |
-| Probe result (exact data)  | beads comment            | `FINDING [tag]: ...`      |
+| Probe result (exact data)  | beads                    | `FINDING [tag]: ...`      |
 | Gotcha for future sessions | beads + patterns.md      | `LEARNED [tag]: ...`      |
-| Unverified decision        | beads comment            | `ASSUMPTION [tag]: ...`   |
+| Unverified decision        | beads                    | `ASSUMPTION [tag]: ...`   |
 | Task state, next steps     | beads                    | `bd update`, `bd close`   |
 | Module contract            | `.designs/{module}.md`   | YAML code block           |
 | Cross-module invariant     | `.designs/invariants.md` | Numbered rules            |
@@ -250,9 +252,9 @@ Every piece of knowledge has one destination:
 Beads comments use **prefixes** (what kind) and **tags** (what domain):
 
 ```
-bd comment BD-042 "FINDING [com, vendorx]: GetProducts returns Object[], not Product[]"
-bd comment BD-042 "LEARNED [sql]: code 810 for RUB, not 643 (ISO 4217)"
-bd comment BD-042 "ASSUMPTION [dotnet]: using int for PK"
+bd comments add BD-042 "FINDING [com, vendorx]: GetProducts returns Object[], not Product[]"
+bd comments add BD-042 "LEARNED [sql]: code 810 for RUB, not 643 (ISO 4217)"
+bd comments add BD-042 "ASSUMPTION [dotnet]: using int for PK"
 ```
 
 Tags are stack/domain level: `[com]`, `[sql]`, `[dotnet]`, `[rust]`, `[kafka]`,
@@ -318,8 +320,8 @@ bd prime              # Inject current task context (~1-2K tokens)
 bd create "Fix X"     # Create a task
 bd update BD-001 --claim              # Claim task (assign + set in_progress)
 bd update BD-001 --notes "Stopping: investigated A, need to try B next"
-bd comment BD-001 "FINDING [com]: GetProducts returns Object[] not Product[]"
-bd comment BD-001 "LEARNED [com]: batch limit 100, undocumented"
+bd comments add BD-001 "FINDING [com]: GetProducts returns Object[] not Product[]"
+bd comments add BD-001 "LEARNED [com]: batch limit 100, undocumented"
 bd close BD-001       # Mark complete
 ```
 
@@ -433,7 +435,7 @@ All are pure Node.js — work identically on Windows, Linux, and macOS without b
 | session-start      | Session begins                 | `bd prime` + patterns.md reminder        |
 | pre-commit         | Before `git commit`            | Reminds to update beads state            |
 | pre-compact        | Before `/compact`              | Reminds to run compound procedure        |
-| knowledge-capture  | After `bd comment ... LEARNED` | Indexes to `knowledge.jsonl` + labels bead with `learned:{tag}` |
+| knowledge-capture  | After `bd comments add ... LEARNED` | Indexes to `knowledge.jsonl` + labels bead with `learned:{tag}` |
 | finalize-check     | Before `bd close`              | Assumption review + blocking status      |
 | record-enforcement | After probe-like commands      | Reminds to record FINDING                |
 
