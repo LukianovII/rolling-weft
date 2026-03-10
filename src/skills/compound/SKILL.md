@@ -1,6 +1,6 @@
 ---
 name: compound
-description: Knowledge extraction before context compression. Always use before running /compact. Also use when switching between unrelated tasks, ending a long session, after any debugging session that produced significant findings, or when context is getting large. Ensures knowledge survives context loss — the cost of writing is near-zero, the cost of forgetting is high.
+description: Knowledge extraction for persistence. Use when switching between unrelated tasks, ending a long session, after any debugging session that produced significant findings, or when context is getting large. The PreCompact hook provides an automated safety net, but this skill is the thorough manual procedure. The cost of writing is near-zero, the cost of forgetting is high.
 ---
 
 # Compound Before Compact
@@ -10,7 +10,7 @@ A new session with loaded files has full continuity. A compacted session loses n
 
 ## The Procedure
 
-Run **before** `/compact`. Do not skip steps.
+Do not skip steps.
 
 ### Step 1 — Extract New Knowledge
 
@@ -71,11 +71,12 @@ If any FINDING from this session affects a contract in `.designs/`:
 - Minor change (clarification, typo) → update in place, add FINDING reference
 - Breaking change (new field, type change) → create bead in integration-repo
 
-### Step 4 — Compact
-
-Only after steps 1-3: run `/compact`.
-
 ## After Compact — Session Continuity
+
+When compaction happens (manual `/compact` or automatic), the PreCompact hook
+scans the session transcript and reminds about unsaved knowledge.
+Compound + PreCompact work together: compound is the thorough manual procedure,
+PreCompact is the automated safety net.
 
 The next session loads context from:
 
