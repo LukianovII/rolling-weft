@@ -81,7 +81,7 @@ Each task follows: **plan** → [**discover**] → **investigate** → [**discus
 
 Hard rules:
 1. Every probe must leave a FINDING (knowledge lost otherwise)
-2. **`bd comment` is DEPRECATED — always use `bd comments add {ID} "..."`**
+2. **`bd comment` was REMOVED (v0.59) — always use `bd comments add {ID} "..."`**
 3. Before `bd close`: review ALL ASSUMPTION records
 4. Before finalize: verify blocking status with user
 5. Claim before work, unclaim before switch:

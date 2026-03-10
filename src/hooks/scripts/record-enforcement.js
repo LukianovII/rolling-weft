@@ -17,8 +17,8 @@ process.stdin.on('end', () => {
     // Catch deprecated `bd comment` (without "s") and warn
     if (/\bbd comment\b/.test(cmd) && !cmd.includes('bd comments')) {
       const message = [
-        '⚠ DEPRECATED: `bd comment` → use `bd comments add {ID} "..."` instead.',
-        'The old syntax will be removed in beads v1.0.',
+        '⚠ ERROR: `bd comment` was REMOVED in beads v0.59. Use `bd comments add {ID} "..."` instead.',
+        'The command will fail — rewrite with correct syntax.',
       ].join('\n');
       console.log(JSON.stringify({ systemMessage: message }));
       return;
