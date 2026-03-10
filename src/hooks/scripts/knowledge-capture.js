@@ -17,13 +17,16 @@ process.stdin.on('end', () => {
     const data = JSON.parse(input);
     const cmd = data?.tool_input?.command || '';
 
-    // Only process bd comments add commands with LEARNED
-    if (!cmd.includes('bd') || !cmd.includes('comments') || !cmd.includes('LEARNED:')) {
+    // Catch deprecated `bd comment` (without "s") — warn and still try to capture
+    const isDeprecated = /\bbd comment\b/.test(cmd) && !cmd.includes('bd comments');
+
+    // Only process bd comments add (or deprecated bd comment) with LEARNED
+    if (!cmd.includes('bd') || (!cmd.includes('comments') && !isDeprecated) || !cmd.includes('LEARNED')) {
       return;
     }
 
-    // Extract bead ID: bd comments add {ID} "LEARNED: ..."
-    const beadMatch = cmd.match(/bd\s+comments\s+add\s+([\w.-]+)\s+/);
+    // Extract bead ID: bd comments add {ID} "LEARNED: ..." (or deprecated bd comment {ID})
+    const beadMatch = cmd.match(/bd\s+comments?\s+(?:add\s+)?([\w.-]+)\s+/);
     if (!beadMatch) return;
     const beadId = beadMatch[1];
 

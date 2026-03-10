@@ -14,6 +14,16 @@ process.stdin.on('end', () => {
     const cmd = (data?.tool_input?.command || '');
     const output = (data?.tool_output?.stdout || '') + (data?.tool_output?.stderr || '');
 
+    // Catch deprecated `bd comment` (without "s") and warn
+    if (/\bbd comment\b/.test(cmd) && !cmd.includes('bd comments')) {
+      const message = [
+        '⚠ DEPRECATED: `bd comment` → use `bd comments add {ID} "..."` instead.',
+        'The old syntax will be removed in beads v1.0.',
+      ].join('\n');
+      console.log(JSON.stringify({ systemMessage: message }));
+      return;
+    }
+
     // If this IS a bd comments add FINDING — check for design-doc drift
     if (cmd.includes('bd comments add') && /FINDING/i.test(cmd)) {
       // Look for tags that typically involve shared contracts

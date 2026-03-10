@@ -35,9 +35,9 @@ Every piece of knowledge has exactly one destination — except LEARNED, which g
 
 | What | Where | Format |
 |------|-------|--------|
-| Probe result (exact data) | beads comment | `FINDING [tag]: ...` |
-| Gotcha for future sessions | **beads comment AND patterns.md** | `LEARNED [tag]: ...` |
-| Unverified decision | beads comment | `ASSUMPTION [tag]: ...` |
+| Probe result (exact data) | `bd comments add` | `FINDING [tag]: ...` |
+| Gotcha for future sessions | **`bd comments add` AND patterns.md** | `LEARNED [tag]: ...` |
+| Unverified decision | `bd comments add` | `ASSUMPTION [tag]: ...` |
 | Task state, blocking, next steps | beads (`bd ready`, `bd prime`) | bd update/close/create |
 | Architecture decision (why) | `.designs/` or ADR | design-doc slice or decision record |
 | Module contract (types, fields) | `.designs/{module}.md` | YAML code block |
@@ -75,9 +75,10 @@ Each task follows: **plan** → [**discover**] → **investigate** → [**discus
 
 Hard rules:
 1. Every probe must leave a FINDING (knowledge lost otherwise)
-2. Before `bd close`: review ALL ASSUMPTION records
-3. Before finalize: verify blocking status with user
-4. Claim before work, unclaim before switch:
+2. **`bd comment` is DEPRECATED — always use `bd comments add {ID} "..."`**
+3. Before `bd close`: review ALL ASSUMPTION records
+4. Before finalize: verify blocking status with user
+5. Claim before work, unclaim before switch:
    - Start: `bd update {ID} --claim`
    - Switch away: `bd update {ID} --status open --assignee ""`
    - Check active: `bd show --current`

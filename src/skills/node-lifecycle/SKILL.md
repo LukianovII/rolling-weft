@@ -10,6 +10,9 @@ real work is nonlinear. But three rules are always enforced.
 
 ## Hard Rules
 
+0. **`bd comment` is DEPRECATED.** Always use `bd comments add {ID} "..."`.
+   The old `bd comment` (without "s") will be removed in beads v1.0.
+
 1. **Record after probe.** Every probe iteration must leave a FINDING.
    No probe without `bd comments add {ID} "FINDING [tag]: ..."`.
    Unrecorded probes are lost knowledge.
