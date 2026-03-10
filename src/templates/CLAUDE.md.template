@@ -26,6 +26,12 @@ bd comments add {ID} "ASSUMPTION [tag]: what was assumed and why (alternative if
 record stopping point in beads, update .designs/ if contracts changed.
 Load skill `@skills/compound` for the full procedure.
 
+**Proactive compound at ~95% context.** When your context is nearly full
+(very long session, auto-compression feels imminent), invoke `@skills/compound`
+yourself IMMEDIATELY. Do not wait for automatic compact — by that point there is
+no room to spawn subagents or persist knowledge. The PreCompact hook is a safety net,
+not the primary mechanism. You are responsible for calling compound proactively.
+
 **Check constitution before deciding.** Before architectural choices, verify
 against `constitution.md`. Violations require explicit justification.
 
