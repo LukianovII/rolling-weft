@@ -199,59 +199,70 @@ auto-memory, not ephemeral context. Everything is VCS-tracked and shared with th
 
 ### Node Lifecycle
 
-Every task (called a *node* or *bead*) follows a lifecycle:
+Every task (called a *node* or *bead*) follows a lifecycle. The lifecycle
+**always owns the bead** — feature-dev, probes, and other tools operate
+inside the work phase.
 
 ```
-plan → [discover] → investigate → [discuss → approve → probe → record]* → finalize
-                                   ────────────────────────────────────
-                                                retry loop
+context load → business logic audit → scope decision → [work → verify → assess → record]* → finalize
+                                                        ─────────────────────────────────
+                                                                  iteration cycle
 ```
 
-**Plan** — what are we solving? Check existing knowledge first.
+**Context Load** (mandatory) — load full context before any work: `bd show {ID}`,
+check `.designs/`, `constitution.md`, `.context/patterns/`, related beads.
 
-**Discover** (optional) — if the task description is ambiguous, the agent
-asks clarifying questions about *what* the task is (not how to implement it).
-User can skip if the task is already clear. Answers are recorded as SCOPE in beads.
+**Business Logic Audit** (mandatory) — agent presents a synthesis: what should
+this bead accomplish in business terms? Open questions? Assumptions?
+User confirms or corrects. Recorded as SCOPE. Happens every time, even if
+the bead has rich context — understanding drifts.
 
-**Investigate** — read-only. Gather information before writing code.
-Check beads for existing FINDINGs, read patterns.md, consult `.designs/`.
-If Discover produced a SCOPE, use it to focus the search.
+**Scope Decision** — classify the work: feature, probe, fix, or research.
+Determines which tool handles the work phase.
 
-**Retry loop** — the core:
-- **Discuss** — what approach do we try? Account for previous FINDINGs.
-- **Approve** — decision made, proceed.
-- **Probe** — isolated trial: prototype, API call, test run.
-- **Record** — `bd comments add {ID} "FINDING [tag]: exact observation"`.
-  Every probe leaves a trace. Next iteration sees all previous results.
+**Iteration Cycle** — all work types follow the same model. The tool changes,
+the cycle doesn't:
+- **Feature** → feature-dev (phases 2-7, summary = handoff) → review gate
+  (code-reviewer + silent-failure-hunter) → assess → record
+- **Probe** → discuss → approve → probe → record
+- **Fix** → investigate → implement → verify → record
+- **Research** → investigation skill → present findings
 
-**Finalize** — review assumptions, write LEARNEDs, update design-docs, close.
+**Finalize** (lightweight) — FINDINGs complete? ASSUMPTIONs reviewed?
+Blocking status verified? Close. Patterns.md updates happen during compound,
+not here.
 
-Five hard rules (enforced by hooks):
-1. Every probe must leave a FINDING
+Six hard rules (enforced by hooks):
+1. Every iteration must leave a FINDING
 2. Before closing: review all ASSUMPTION records
 3. Before closing: verify blocking status with user
-4. Claim before work, unclaim before switch (`bd update {ID} --claim` / `--status open --assignee ""`)
-5. One bead, one scope — new work spawns a new bead
+4. One bead, one scope — new work spawns a new bead
+5. Claim before work, unclaim before switch (`bd update {ID} --claim` / `--status open --assignee ""`)
+6. Lifecycle owns the bead, tools own the work — feature-dev, probes, investigation are called *within* the lifecycle
 
 ### Knowledge Routing
 
 Every piece of knowledge has one destination:
 
-| What                       | Where                    | Format                    |
-| -------------------------- | ------------------------ | ------------------------- |
-| Probe result (exact data)  | beads                    | `FINDING [tag]: ...`      |
-| Gotcha for future sessions | beads + patterns.md      | `LEARNED [tag]: ...`      |
-| Unverified decision        | beads                    | `ASSUMPTION [tag]: ...`   |
-| Task state, next steps     | beads                    | `bd update`, `bd close`   |
-| Module contract            | `.designs/{module}.md`   | YAML code block           |
-| Cross-module invariant     | `.designs/invariants.md` | Numbered rules            |
-| Architectural gate         | `constitution.md`        | Rule + violation protocol |
+| What                            | Where                    | Format                    |
+| ------------------------------- | ------------------------ | ------------------------- |
+| Business logic synthesis        | beads                    | `SCOPE: ...`              |
+| Work type classification        | beads                    | `SCOPE-DECISION: ...`     |
+| Iteration result (exact data)   | beads                    | `FINDING [tag]: ...`      |
+| Gotcha for future sessions      | beads + patterns/        | `LEARNED [tag]: ...`      |
+| Unverified decision             | beads                    | `ASSUMPTION [tag]: ...`   |
+| Task state, next steps          | beads                    | `bd update`, `bd close`   |
+| Module contract                 | `.designs/{module}.md`   | YAML code block           |
+| Cross-module invariant          | `.designs/invariants.md` | Numbered rules            |
+| Architectural gate              | `constitution.md`        | Rule + violation protocol |
 
 ### Comment Convention
 
 Beads comments use **prefixes** (what kind) and **tags** (what domain):
 
 ```
+bd comments add BD-042 "SCOPE: process payments via COM API, batch mode, retry on timeout"
+bd comments add BD-042 "SCOPE-DECISION: feature — implementing batch payment processor"
 bd comments add BD-042 "FINDING [com, vendorx]: GetProducts returns Object[], not Product[]"
 bd comments add BD-042 "LEARNED [sql]: code 810 for RUB, not 643 (ISO 4217)"
 bd comments add BD-042 "ASSUMPTION [dotnet]: using int for PK"
@@ -275,13 +286,15 @@ constitution.md              ← architectural gates (checked before decisions)
 ├── settings.json            ← Claude Code hooks configuration
 └── skills/
     ├── node-lifecycle/
-    │   └── SKILL.md         ← core: task phases, hard rules, recovery patterns
+    │   └── SKILL.md         ← core: bead lifecycle, context load, business audit, iteration cycle
     ├── investigation/
     │   └── SKILL.md         ← research-first, sub-agent delegation
     ├── compound/
-    │   └── SKILL.md         ← knowledge extraction before /compact
+    │   └── SKILL.md         ← heavy knowledge extraction at session boundaries
+    ├── consolidation/
+    │   └── SKILL.md         ← project entropy reduction, meta-audit across beads
     ├── design-docs/
-    │   └── SKILL.md         ← design document management
+    │   └── SKILL.md         ← format, vertical slicing, diagrams, iterative lifecycle
     ├── constitution/
     │   └── SKILL.md         ← guided constitution.md setup and revision
     └── onboarding/
@@ -409,14 +422,15 @@ This is fine for small teams.
 Skills are loaded on demand when the situation matches. They stay out of
 context until needed (~2-4KB each vs. loading everything into every session).
 
-| Situation                     | Skill                    | When                               |
-| ----------------------------- | ------------------------ | ---------------------------------- |
-| Working on a tracked task     | `@skills/node-lifecycle` | Plan, investigate, probe, finalize |
-| Unfamiliar API or vendor docs | `@skills/investigation`  | Before writing code                |
-| About to run `/compact`       | `@skills/compound`       | Before context compression         |
-| Creating/updating design docs | `@skills/design-docs`    | Contract changes                   |
-| Setting up or revising gates  | `@skills/constitution`   | New project, new constraint found  |
-| Project inception session     | `@skills/onboarding`     | Once, at project start             |
+| Situation                     | Skill                      | When                                        |
+| ----------------------------- | -------------------------- | ------------------------------------------- |
+| Working on a tracked task     | `@skills/node-lifecycle`   | Context load, audit, iterate, finalize      |
+| Unfamiliar API or vendor docs | `@skills/investigation`    | Before writing code                         |
+| Session ending or milestone   | `@skills/compound`         | Heavy knowledge extraction                  |
+| After a wave of features      | `@skills/consolidation`    | Audit beads, designs, code patterns, naming |
+| Creating/updating design docs | `@skills/design-docs`      | Contract changes, diagram design            |
+| Setting up or revising gates  | `@skills/constitution`     | New project, new constraint found           |
+| Project inception session     | `@skills/onboarding`       | Once, at project start                      |
 
 Skills are referenced in CLAUDE.md via a table. Claude reads them via the
 `@skills/name` syntax or directly when the situation matches.
@@ -446,11 +460,15 @@ and shows a warning instead of failing.
 
 ## Design Principles
 
-**Research before code.** For unfamiliar APIs: investigate first, document findings,
-get confirmation, then implement. Constitution gates prevent architectural drift.
+**Audit before code.** Every bead starts with a mandatory business logic audit —
+the agent synthesizes what it understands, the user confirms or corrects.
+For unfamiliar APIs: investigate first, document findings, get confirmation,
+then implement. Constitution gates prevent architectural drift.
 
-**Compound, don't compact.** Extract knowledge before compressing context. A new session
-with loaded project files has full continuity without the token overhead of a full context.
+**Compound at boundaries, finalize every bead.** Finalize is lightweight — check
+FINDINGs, ASSUMPTIONs, blocking status, close. Compound is heavy — extract
+knowledge to patterns, update designs, persist state. Compound runs at session
+boundaries and epic milestones, not every bead close.
 
 **Record everything.** Every probe leaves a FINDING. Every gotcha becomes a LEARNED.
 Every unverified decision is an ASSUMPTION. On finalize, assumptions are reviewed.
