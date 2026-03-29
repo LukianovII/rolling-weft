@@ -116,6 +116,33 @@ if (process.argv.includes('--check')) {
     ok = false;
   }
 
+  // Plugins (non-blocking — warn only)
+  const mermaidSkillDir = path.join(projectRoot, '.claude', 'skills', 'mermaid-diagram');
+  if (fs.existsSync(path.join(mermaidSkillDir, '.git'))) {
+    console.log('  [✓] mermaid-skill (git clone)');
+  } else {
+    console.log('  [!] mermaid-skill not found — re-run setup or: git clone --depth 1 https://github.com/WH-2099/mermaid-skill.git .claude/skills/mermaid-diagram/');
+  }
+
+  const claudeCliCheck = spawnSync('claude', ['--version'], { stdio: 'pipe', shell: true });
+  if (claudeCliCheck.status === 0) {
+    const pluginList = spawnSync('claude', ['plugin', 'list'], {
+      stdio: 'pipe',
+      shell: true,
+      timeout: 10000,
+    });
+    const pluginOutput = (pluginList.stdout || '').toString();
+    for (const name of ['feature-dev', 'pr-review-toolkit']) {
+      if (pluginOutput.includes(name)) {
+        console.log('  [✓] plugin: ' + name);
+      } else {
+        console.log('  [!] plugin: ' + name + ' not found (recommended: claude plugin install ' + name + ')');
+      }
+    }
+  } else {
+    console.log('  [!] claude CLI not found — cannot check marketplace plugins');
+  }
+
   console.log('');
   if (ok) {
     console.log('All checks passed.');
@@ -179,7 +206,7 @@ function ensureDir(dir) {
 // ---------------------------------------------------------------------------
 // Step 1: Copy template files (only if target doesn't exist)
 // ---------------------------------------------------------------------------
-console.log('[1/4] Copying templates...');
+console.log('[1/5] Copying templates...');
 
 const templates = [
   ['templates/CLAUDE.md.template', 'CLAUDE.md'],
@@ -215,7 +242,7 @@ if (!fs.existsSync(sliceTemplateDest)) {
 // Step 2: Copy skills and hooks (always overwrite — keeps current)
 // ---------------------------------------------------------------------------
 console.log('');
-console.log('[2/4] Updating skills and hooks...');
+console.log('[2/5] Updating skills and hooks...');
 
 // Skills → .claude/skills/
 copyDir(
@@ -237,7 +264,7 @@ console.log('  +  .hooks/scripts/');
 // Step 3: Initialize beads
 // ---------------------------------------------------------------------------
 console.log('');
-console.log('[3/4] Initializing beads...');
+console.log('[3/5] Initializing beads...');
 
 const beadsDir = path.join(projectRoot, '.beads');
 if (fs.existsSync(beadsDir)) {
@@ -333,7 +360,7 @@ if (fs.existsSync(beadsDir)) {
 // Step 4: Configure Claude Code hooks
 // ---------------------------------------------------------------------------
 console.log('');
-console.log('[4/4] Configuring Claude Code hooks...');
+console.log('[4/5] Configuring Claude Code hooks...');
 
 const claudeDir = path.join(projectRoot, '.claude');
 ensureDir(claudeDir);
@@ -358,6 +385,82 @@ settings.hooks = hooksConfig.hooks;
 
 fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n');
 console.log('  +  .claude/settings.json');
+
+// ---------------------------------------------------------------------------
+// Step 5: Install Claude Code plugins
+// ---------------------------------------------------------------------------
+console.log('');
+console.log('[5/5] Installing plugins...');
+
+// mermaid-skill: git clone (no plugin manifest — pure reference files)
+const mermaidDir = path.join(projectRoot, '.claude', 'skills', 'mermaid-diagram');
+if (fs.existsSync(path.join(mermaidDir, '.git'))) {
+  // Pull latest
+  const pull = spawnSync('git', ['-C', mermaidDir, 'pull', '--ff-only'], {
+    stdio: 'pipe',
+    shell: true,
+    timeout: 30000,
+  });
+  if (pull.status === 0) {
+    console.log('  .  mermaid-skill  (updated)');
+  } else {
+    console.log('  .  mermaid-skill  (exists, pull failed — check manually)');
+  }
+} else {
+  // Remove non-git dir if exists (e.g. leftover from partial clone)
+  if (fs.existsSync(mermaidDir)) {
+    fs.rmSync(mermaidDir, { recursive: true, force: true });
+  }
+  const clone = spawnSync('git', [
+    'clone', '--depth', '1',
+    'https://github.com/WH-2099/mermaid-skill.git',
+    mermaidDir,
+  ], { stdio: 'pipe', shell: true, timeout: 60000 });
+  if (clone.status === 0) {
+    console.log('  +  mermaid-skill  (cloned to .claude/skills/mermaid-diagram/)');
+  } else {
+    console.log('  !  mermaid-skill clone failed — run manually:');
+    console.log('     git clone --depth 1 https://github.com/WH-2099/mermaid-skill.git');
+    console.log('     into: .claude/skills/mermaid-diagram/');
+  }
+}
+
+// Marketplace plugins: feature-dev, pr-review-toolkit
+const claudeCheck = spawnSync('claude', ['--version'], {
+  stdio: 'pipe',
+  shell: true,
+});
+
+if (claudeCheck.status !== 0) {
+  console.log('  !  claude CLI not found — install plugins manually:');
+  console.log('     claude plugin install feature-dev');
+  console.log('     claude plugin install pr-review-toolkit');
+} else {
+  const marketplacePlugins = [
+    { arg: 'feature-dev', name: 'feature-dev' },
+    { arg: 'pr-review-toolkit', name: 'pr-review-toolkit' },
+  ];
+
+  for (const plugin of marketplacePlugins) {
+    const result = spawnSync('claude', ['plugin', 'install', plugin.arg], {
+      cwd: projectRoot,
+      stdio: 'pipe',
+      shell: true,
+      timeout: 30000,
+    });
+    if (result.status === 0) {
+      console.log('  +  ' + plugin.name);
+    } else {
+      const output = (result.stderr || '').toString() + (result.stdout || '').toString();
+      if (output.includes('already')) {
+        console.log('  .  ' + plugin.name + '  (already installed)');
+      } else {
+        console.log('  !  ' + plugin.name + ' failed — run manually:');
+        console.log('     claude plugin install ' + plugin.arg);
+      }
+    }
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Done

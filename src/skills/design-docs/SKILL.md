@@ -150,6 +150,55 @@ if they affect the flow (e.g., shared state, locks, external constraints).
 Not every slice needs a diagram. Use when the flow is non-trivial or when
 relationships between components are not obvious from the code.
 
+### Mermaid Syntax Reference
+
+For up-to-date Mermaid syntax per diagram type, consult **WH-2099/mermaid-skill**
+(auto-synced weekly from official mermaid-js docs). Load the relevant type reference
+before writing a diagram you haven't used recently.
+
+### Mermaid Practical Rules
+
+**Quoting — the #1 failure cause.**
+Any label with `()`, `@`, `/`, `<>`, `:`, `,`, or `|` must be double-quoted:
+`A["Send to user (optional)"]`. When in doubt — quote it.
+
+**`flowchart`, not `graph`.** `graph` is legacy — lacks subgraph `direction` and modern shapes.
+
+**`end` is reserved.** A node labeled `end` breaks the parser. Use `B["end"]`.
+
+**Line breaks: `<br>` only, never `\n`.** `\n` renders as literal text.
+Always wrap in quotes: `["Line One<br>Line Two"]`. Prefer `<br>` over `<br/>` —
+self-closing fails in some contexts (timeline event details, ER labels).
+Class diagram members and Sankey labels do not support line breaks at all.
+
+**Labels under 60 chars.** Move details to notes or companion text.
+
+**Every `classDef` must set `fill` + `stroke` + `color`.**
+Omitting `color` causes text to inherit the renderer's theme — unreadable in dark mode.
+Use medium-saturation pastels with dark text (`#374151`). Reserve white text for
+saturated dark fills only. Semantic styles to use:
+
+| Style | Purpose |
+|-------|---------|
+| trigger | Entry points, user actions |
+| success | Completed states, positive outcomes |
+| error | Failures, exceptions |
+| decision | Branch points, conditionals |
+| primary | Default emphasis |
+
+`classDef` support: full in flowchart, partial in state/mindmap/C4, none in
+sequence/ER/sankey.
+
+**Layout quality:**
+- Declaration order = layout order. Declare nodes in reading direction (top→bottom or left→right)
+- Node with 5+ edges → insert a dispatcher/group node to avoid spider-web
+- Back-edges (cycles) → isolate in subgraph or use `stateDiagram-v2`
+- When crossings persist — try the orthogonal `rankDir` (`TD` ↔ `LR`)
+- `subgraph` with `direction` constrains placement, prevents global crossings
+
+**Every `subgraph`, `alt`, `loop`, `opt`, `par`, `critical`, `rect`, `box` needs `end`.**
+Nested blocks are especially prone to missing terminators — count your `end`s.
+
 ## Drift Awareness
 
 If a FINDING contradicts what's in the design-doc:
