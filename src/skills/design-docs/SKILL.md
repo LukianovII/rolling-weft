@@ -91,28 +91,64 @@ Key principles:
 - Error codes with human-readable descriptions
 - Nullable fields marked explicitly
 
-## Mermaid Usage
+## Diagrams
 
-**System-level** (in index.md): module graph showing connections and protocols.
+**Prefer Mermaid and Markdown.** ASCII art only for trivial inline sketches (3-5 boxes).
+For anything with relationships, layers, or flow — use Mermaid.
+
+### Goal-First Diagram Design
+
+Before drawing a diagram, answer:
+
+1. **What is this diagram for?** What specific aspect, relationship, or flow does it
+   need to communicate? One diagram — one purpose.
+
+2. **What entities belong on this diagram?** Only those relevant to the stated purpose.
+   - Don't split an entity into multiple boxes just because it has sub-components —
+     unless the purpose is to show those sub-components.
+   - Don't merge distinct entities into one box just because they're "similar" —
+     unless the purpose is to show them as a group.
+   - The purpose determines granularity, not the implementation structure.
+
+3. **What relationships exist?** This is where most diagrams fail.
+   - **Direct relationships** (A calls B) are obvious and always shown.
+   - **Indirect relationships** (A depends on C through B) are often missing but
+     change the reader's understanding of the system.
+   - **Constraint relationships** (A must run before B; C and D share a resource)
+     are frequently omitted but critical for architecture decisions.
+   - **Ownership/lifecycle relationships** (A creates and destroys B) affect
+     how you reason about failures and cleanup.
+   - Before finalizing: "are there relationships NOT shown that would change
+     how someone reads this diagram?" If yes — add them or document why omitted.
+
+4. **What type of diagram fits the purpose?**
+
+   | Purpose | Diagram type |
+   |---------|-------------|
+   | Module boundaries and dependencies | `graph LR/TD` |
+   | Request/response flow, temporal ordering | `sequenceDiagram` |
+   | State transitions, lifecycle | `stateDiagram-v2` |
+   | Decision logic, branching flows | `flowchart` |
+   | Class/interface relationships | `classDiagram` |
+
+### System-Level (in index.md)
+
+Module graph showing connections, protocols, **and non-obvious dependencies**:
 ```mermaid
 graph LR
   One[Module One] -->|"gRPC"| Backend
   Two[Module Two] -->|"gRPC"| Backend
   Backend -->|"Kafka"| Notifications
+  One -.->|"shared resource"| Two
 ```
 
-**Module-level** (inside slices): sequence diagrams for complex internal flows.
-```mermaid
-sequenceDiagram
-  participant Client
-  participant Auth
-  participant Daemon
-  Client->>Auth: StartProcess(credentials)
-  Auth-->>Daemon: stdout(token)
-  Daemon->>API: COM GetProducts(token)
-```
+### Module-Level (inside slices)
 
-Not every slice needs a Mermaid diagram. Use when the flow is non-trivial.
+Sequence diagrams for complex internal flows. Include indirect participants
+if they affect the flow (e.g., shared state, locks, external constraints).
+
+Not every slice needs a diagram. Use when the flow is non-trivial or when
+relationships between components are not obvious from the code.
 
 ## Drift Awareness
 
@@ -124,3 +160,41 @@ If a FINDING contradicts what's in the design-doc:
 4. Breaking → update contract in shared/ (or local .designs/), FINDING + LEARNED, notify team
 
 On finalize, check: do any FINDINGs from this work reveal design-doc drift?
+
+## Iterative Lifecycle
+
+Design docs are **living documents**, not write-once artifacts. The observed pattern
+is: write before implementation, then iterate as learnings emerge.
+
+### Expected Iteration Pattern
+
+```
+write initial design (before code)
+  → implement → discover gotcha → update design → continue
+  → implement → probe reveals new constraint → update design → continue
+  → ...
+  → consolidation: review all designs for drift and staleness
+```
+
+A design doc that hasn't been updated after 3+ sessions of active work on its
+module is likely drifting from reality. Check during compound.
+
+### When a Design Doc Becomes Legacy
+
+Signs:
+- The module was significantly rearchitected since the doc was written
+- More FINDINGs contradict the doc than support it
+- A new design doc covers the same boundary with updated contracts
+
+**Procedure:**
+1. Move to `.designs/legacy/` (don't delete — history has value)
+2. Create new design doc reflecting current reality
+3. Reference the legacy doc: "Replaces: legacy/{old-name}.md. Reason: {why}"
+
+### Design Doc Hygiene (during Consolidation)
+
+During consolidation (`@skills/consolidation`), review all design docs:
+- Does each doc still reflect the code?
+- Are there modules without design docs that should have them?
+- Are there design docs for modules that no longer exist?
+- Do YAML contracts match actual field names and types?
