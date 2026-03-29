@@ -21,7 +21,7 @@ Not a plugin (yet). Just files you copy into your project with a setup script.
 
 ## Quick Start
 
-**Prerequisites:** [Node.js](https://nodejs.org/), [beads](https://github.com/steveyegge/beads) (`bd`), [Dolt](https://www.dolthub.com/)
+**Prerequisites:** [Node.js](https://nodejs.org/), [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI, [beads](https://github.com/steveyegge/beads) (`bd`), [Dolt](https://www.dolthub.com/)
 
 ```bash
 # Clone once, then run setup for each project:
@@ -62,7 +62,7 @@ module) — you probably don't need this.
 
 ## Installation
 
-**Requirements:** Node.js, [beads](https://github.com/steveyegge/beads) (`bd`), and [Dolt](https://www.dolthub.com/) (beads uses Dolt as storage backend). No WSL, no bash required.
+**Requirements:** Node.js, [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI, [beads](https://github.com/steveyegge/beads) (`bd`), and [Dolt](https://www.dolthub.com/) (beads uses Dolt as storage backend). No WSL, no bash required.
 
 Clone this repository once. Then run setup for each project you want to add it to.
 
@@ -137,6 +137,8 @@ The installer:
 2. Copies skills and hooks — always overwrites (keeps framework up to date on re-run)
 3. Runs `bd init` to initialize beads — skips if `.beads/` already exists
 4. Configures Claude Code hooks in `.claude/settings.json`
+5. Installs plugins — clones [WH-2099/mermaid-skill](https://github.com/WH-2099/mermaid-skill)
+   as Mermaid syntax reference, installs `feature-dev` and `pr-review-toolkit` from marketplace
 
 Re-running is safe — user-edited files (CLAUDE.md, constitution.md, patterns.md)
 are never overwritten.
@@ -295,6 +297,7 @@ constitution.md              ← architectural gates (checked before decisions)
     │   └── SKILL.md         ← project entropy reduction, meta-audit across beads
     ├── design-docs/
     │   └── SKILL.md         ← format, vertical slicing, diagrams, iterative lifecycle
+    ├── mermaid-diagram/     ← Mermaid syntax reference (cloned from WH-2099/mermaid-skill)
     ├── constitution/
     │   └── SKILL.md         ← guided constitution.md setup and revision
     └── onboarding/
@@ -432,6 +435,14 @@ context until needed (~2-4KB each vs. loading everything into every session).
 | Setting up or revising gates  | `@skills/constitution`     | New project, new constraint found           |
 | Project inception session     | `@skills/onboarding`       | Once, at project start                      |
 
+**External plugins** (installed by setup):
+
+| Plugin | Source | Role |
+| ------ | ------ | ---- |
+| `feature-dev` | Marketplace | Guided feature implementation (phases 2-7 inside the iteration cycle) |
+| `pr-review-toolkit` | Marketplace | Review gate: code-reviewer + silent-failure-hunter after feature-dev |
+| `mermaid-skill` | [WH-2099/mermaid-skill](https://github.com/WH-2099/mermaid-skill) | Up-to-date Mermaid syntax reference (auto-synced from official docs) |
+
 Skills are referenced in CLAUDE.md via a table. Claude reads them via the
 `@skills/name` syntax or directly when the situation matches.
 
@@ -492,7 +503,7 @@ the main context.
 
 - **No build step.** What's in `src/` is what users get.
 - **Cross-platform.** All hooks and scripts are pure Node.js — they work identically on Windows, Linux, and macOS. No bash, no WSL, no platform-specific shell scripts.
-- **One external dependency: beads.** Hooks degrade gracefully if it's missing.
+- **Core dependency: beads.** Hooks degrade gracefully if it's missing. External plugins (feature-dev, pr-review-toolkit, mermaid-skill) are recommended but optional.
 - **Idempotent setup.** Re-running `setup.js` on an existing project is always safe.
 
 ---
@@ -557,4 +568,6 @@ Rolling Weft is a composition, not an invention. These projects shaped it:
 - [beads](https://github.com/steveyegge/beads) — git-backed task tracking
 - Rajiv Pant — ["reliability over intelligence" principle](https://rajiv.com/blog/2025/12/12/how-claude-memory-actually-works-and-why-claude-md-matters/)
 - [awesome-claude-skills](https://github.com/travisvn/awesome-claude-skills) — skills-as-separate-files pattern
+- [WH-2099/mermaid-skill](https://github.com/WH-2099/mermaid-skill) — Mermaid syntax reference (auto-synced from official mermaid-js docs)
+- [mgranberry/mermaid-diagram-skill](https://github.com/mgranberry/mermaid-diagram-skill) and [coleam00/excalidraw-diagram-skill](https://github.com/coleam00/excalidraw-diagram-skill) — Mermaid practical rules distilled from their syntax pitfalls, theming, and layout guidelines
 - [Genrich Altshuller](https://en.wikipedia.org/wiki/Genrich_Altshuller) / TRIZ — four concepts used in the onboarding skill: IFR, contradictions, system levels, resources
