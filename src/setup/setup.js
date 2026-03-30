@@ -44,12 +44,13 @@ if (process.argv.includes('--check')) {
     ok = false;
   }
 
-  // dolt (optional — only needed for server mode; embedded mode is built into bd ≥0.63)
+  // dolt (required — server mode needs external dolt binary)
   const doltCheck = spawnSync('dolt', ['version'], { stdio: 'pipe', shell: true });
   if (doltCheck.status === 0) {
-    console.log('  [✓] dolt ' + (doltCheck.stdout || '').toString().trim().replace(/^dolt version\s*/i, '') + '  (optional — for server mode)');
+    console.log('  [✓] dolt ' + (doltCheck.stdout || '').toString().trim().replace(/^dolt version\s*/i, ''));
   } else {
-    console.log('  [·] dolt not found  (optional — embedded mode works without it)');
+    console.log('  [✗] dolt not found — install: https://github.com/dolthub/dolt/releases');
+    ok = false;
   }
 
   // .beads/
@@ -265,10 +266,10 @@ if (fs.existsSync(beadsDir)) {
     console.log('     go install github.com/steveyegge/beads/cmd/bd@latest');
     console.log('     Then run: bd init');
   } else {
-    // bd ≥0.63 uses embedded Dolt by default — no external dolt binary needed.
+    // Use server mode — embedded Dolt requires CGO (C compiler) on Windows.
     // Pass empty stdin (pipe) so bd init sees a non-TTY and skips
     // the "Contributing to someone else's repo?" interactive prompt.
-    const result = spawnSync('bd', ['init'], {
+    const result = spawnSync('bd', ['init', '--mode', 'server'], {
       cwd: projectRoot,
       input: '',
       stdio: ['pipe', 'inherit', 'inherit'],
