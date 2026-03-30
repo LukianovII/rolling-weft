@@ -44,29 +44,12 @@ if (process.argv.includes('--check')) {
     ok = false;
   }
 
-  // dolt
+  // dolt (optional — only needed for server mode; embedded mode is built into bd ≥0.63)
   const doltCheck = spawnSync('dolt', ['version'], { stdio: 'pipe', shell: true });
   if (doltCheck.status === 0) {
-    console.log('  [✓] dolt ' + (doltCheck.stdout || '').toString().trim().replace(/^dolt version\s*/i, ''));
+    console.log('  [✓] dolt ' + (doltCheck.stdout || '').toString().trim().replace(/^dolt version\s*/i, '') + '  (optional — for server mode)');
   } else {
-    console.log('  [✗] dolt not found — install: https://docs.dolthub.com/introduction/installation');
-    ok = false;
-  }
-
-  // dolt sql-server
-  const portCheck = spawnSync('node', ['-e', [
-    'const n=require("net"),s=new n.Socket();',
-    's.setTimeout(500);',
-    's.on("connect",()=>{s.destroy();process.exit(0)});',
-    's.on("timeout",()=>{s.destroy();process.exit(1)});',
-    's.on("error",()=>process.exit(1));',
-    's.connect(3307,"127.0.0.1");',
-  ].join('')], { stdio: 'pipe', timeout: 1500 });
-  if (portCheck.status === 0) {
-    console.log('  [✓] dolt sql-server running (port 3307)');
-  } else {
-    console.log('  [✗] dolt sql-server not reachable on port 3307');
-    ok = false;
+    console.log('  [·] dolt not found  (optional — embedded mode works without it)');
   }
 
   // .beads/
@@ -278,80 +261,21 @@ if (fs.existsSync(beadsDir)) {
   });
 
   if (bdCheck.status !== 0) {
-    console.log('  !  bd not found. Install beads and dolt first:');
-    console.log('     npm install -g @beads/bd');
-    console.log('     dolt: https://docs.dolthub.com/introduction/installation');
+    console.log('  !  bd not found. Install beads first:');
+    console.log('     go install github.com/steveyegge/beads/cmd/bd@latest');
     console.log('     Then run: bd init');
   } else {
-    // Check if dolt is available (required by beads — SQLite backend was removed)
-    const doltCheck = spawnSync('dolt', ['version'], {
+    // bd ≥0.63 uses embedded Dolt by default — no external dolt binary needed.
+    // Pass empty stdin (pipe) so bd init sees a non-TTY and skips
+    // the "Contributing to someone else's repo?" interactive prompt.
+    const result = spawnSync('bd', ['init'], {
       cwd: projectRoot,
-      stdio: 'pipe',
+      input: '',
+      stdio: ['pipe', 'inherit', 'inherit'],
       shell: true,
     });
-
-    if (doltCheck.status !== 0) {
-      console.log('  !  dolt not found. beads requires dolt as storage backend.');
-      console.log('     Install from: https://docs.dolthub.com/introduction/installation');
-      console.log('     Then run: bd init');
-    } else {
-      // Ensure dolt sql-server is running (beads cannot auto-start it on Windows)
-      const portCheck = () => spawnSync('node', ['-e', [
-        'const n=require("net"),s=new n.Socket();',
-        's.setTimeout(500);',
-        's.on("connect",()=>{s.destroy();process.exit(0)});',
-        's.on("timeout",()=>{s.destroy();process.exit(1)});',
-        's.on("error",()=>process.exit(1));',
-        's.connect(3307,"127.0.0.1");',
-      ].join('')], { stdio: 'pipe', timeout: 1500 });
-
-      let serverReady = portCheck().status === 0;
-
-      if (!serverReady) {
-        console.log('  .  dolt sql-server not running — starting...');
-
-        // On Windows, Start-Process creates a truly independent background process
-        // that survives after setup exits. On Unix, detached spawn is sufficient.
-        if (process.platform === 'win32') {
-          // Start dolt in the user's home dir so it doesn't create config/log
-          // files in the framework's setup/ directory.
-          const doltCwd = process.env.USERPROFILE || process.env.TEMP || 'C:\\';
-          spawnSync(
-            'powershell',
-            [
-              '-NoProfile', '-NonInteractive', '-Command',
-              'Start-Process -FilePath dolt -ArgumentList @("sql-server","--port","3307") -WindowStyle Hidden',
-            ],
-            { stdio: 'pipe', cwd: doltCwd }
-          );
-        } else {
-          const srv = spawnSync('sh', ['-c', 'dolt sql-server --port 3307 &'], { stdio: 'pipe' });
-          void srv; // fire-and-forget (sh exits immediately after forking)
-        }
-
-        // Poll for readiness (up to 10 s)
-        for (let i = 0; i < 10; i++) {
-          Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1000);
-          if (portCheck().status === 0) { serverReady = true; break; }
-        }
-      }
-
-      if (!serverReady) {
-        console.log('  !  dolt sql-server did not start.');
-        console.log('     Run "dolt sql-server" in a separate terminal, then "bd init".');
-      } else {
-        // Pass empty stdin (pipe) so bd init sees a non-TTY and skips
-        // the "Contributing to someone else's repo?" interactive prompt.
-        const result = spawnSync('bd', ['init'], {
-          cwd: projectRoot,
-          input: '',
-          stdio: ['pipe', 'inherit', 'inherit'],
-          shell: true,
-        });
-        if (result.status !== 0) {
-          console.log('  !  bd init failed — run "bd init" manually');
-        }
-      }
+    if (result.status !== 0) {
+      console.log('  !  bd init failed — run "bd init" manually');
     }
   }
 }

@@ -21,7 +21,7 @@ Not a plugin (yet). Just files you copy into your project with a setup script.
 
 ## Quick Start
 
-**Prerequisites:** [Node.js](https://nodejs.org/), [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI, [beads](https://github.com/steveyegge/beads) (`bd`), [Dolt](https://www.dolthub.com/)
+**Prerequisites:** [Node.js](https://nodejs.org/), [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI, [beads](https://github.com/steveyegge/beads) (`bd` ≥0.63)
 
 ```bash
 # Clone once, then run setup for each project:
@@ -62,7 +62,7 @@ module) — you probably don't need this.
 
 ## Installation
 
-**Requirements:** Node.js, [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI, [beads](https://github.com/steveyegge/beads) (`bd`), and [Dolt](https://www.dolthub.com/) (beads uses Dolt as storage backend). No WSL, no bash required.
+**Requirements:** Node.js, [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI, [beads](https://github.com/steveyegge/beads) (`bd` ≥0.63). No WSL, no bash required. Dolt is embedded in `bd` — no separate installation needed.
 
 Clone this repository once. Then run setup for each project you want to add it to.
 
@@ -80,8 +80,6 @@ go install github.com/steveyegge/beads/cmd/bd@latest
 Add-MpPreference -ExclusionPath "$env:APPDATA\npm"
 npm install -g @beads/bd
 ```
-
-Install Dolt: https://docs.dolthub.com/introduction/installation
 
 Then run setup for your project:
 
@@ -102,10 +100,6 @@ Or pass the path directly (useful for scripting):
 src\setup\install.bat C:\projects\my-app
 ```
 
-The installer auto-starts `dolt sql-server` if it is not already running.
-For persistent auto-start after reboot, run `src\setup\install-dolt-service.ps1` —
-it registers a Windows Scheduled Task that starts Dolt at logon.
-
 ### Linux / macOS
 
 Install beads (`bd`):
@@ -115,21 +109,11 @@ npm install -g @beads/bd
 # or: go install github.com/steveyegge/beads/cmd/bd@latest
 ```
 
-Install Dolt:
-
-```bash
-brew install dolt                          # macOS
-curl -fsSL https://get.doltlab.com | sh   # Linux
-# or: https://docs.dolthub.com/introduction/installation
-```
-
 Then run setup for your project:
 
 ```bash
 node /path/to/rolling-weft/src/setup/setup.js /path/to/my-app
 ```
-
-On Linux/macOS, beads starts `dolt sql-server` automatically — no manual step needed.
 
 The installer:
 1. Copies templates (CLAUDE.md, constitution.md, patterns.md, design-doc scaffolds) —
@@ -327,7 +311,7 @@ constitution.md              ← architectural gates (checked before decisions)
 
 ## Using Beads
 
-[Beads](https://github.com/steveyegge/beads) is a git-backed CLI issue tracker.
+[Beads](https://github.com/steveyegge/beads) is a Dolt-backed CLI issue tracker.
 Rolling Weft uses it for task state, findings, and knowledge.
 
 ```bash
@@ -521,17 +505,22 @@ npm install -g @beads/bd
 ```
 Or install via Go instead: `go install github.com/steveyegge/beads/cmd/bd@latest`
 
-### Dolt not running
+### Dolt server mode (optional)
 
-Beads requires a running `dolt sql-server`. On Linux/macOS, beads starts it automatically.
-On Windows, the session-start hook starts it if needed, but if you see connection errors:
+By default beads ≥0.63 uses **embedded Dolt** — no external server needed.
+If you need multi-writer support (multiple agents writing simultaneously),
+initialize with `bd init --server` and run a separate `dolt sql-server`:
 
 ```powershell
-# Start manually:
 dolt sql-server --port 3307
+```
 
-# Or install as auto-start task (runs at logon):
-powershell -ExecutionPolicy Bypass -File path\to\rolling-weft\src\setup\install-dolt-service.ps1
+To migrate from server mode to embedded:
+```bash
+bd backup                  # export to .beads/backup/*.jsonl
+rm -rf .beads/dolt         # remove server DB
+bd init                    # re-init in embedded mode
+bd backup restore          # import data back
 ```
 
 ### bd not found
