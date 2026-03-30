@@ -62,7 +62,7 @@ module) — you probably don't need this.
 
 ## Installation
 
-**Requirements:** Node.js, [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI, [beads](https://github.com/steveyegge/beads) (`bd` ≥0.63). No WSL, no bash required. Dolt is embedded in `bd` — no separate installation needed.
+**Requirements:** Node.js, [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI, [beads](https://github.com/steveyegge/beads) (`bd` ≥0.63), [Dolt](https://github.com/dolthub/dolt/releases). No WSL, no bash required.
 
 Clone this repository once. Then run setup for each project you want to add it to.
 
@@ -119,7 +119,7 @@ The installer:
 1. Copies templates (CLAUDE.md, constitution.md, patterns.md, design-doc scaffolds) —
    only if the target file doesn't exist
 2. Copies skills and hooks — always overwrites (keeps framework up to date on re-run)
-3. Runs `bd init` to initialize beads — skips if `.beads/` already exists
+3. Runs `bd init --mode server` to initialize beads — skips if `.beads/` already exists
 4. Configures Claude Code hooks in `.claude/settings.json`
 5. Installs plugins — clones [WH-2099/mermaid-skill](https://github.com/WH-2099/mermaid-skill)
    as Mermaid syntax reference, installs `feature-dev` and `pr-review-toolkit` from marketplace
@@ -505,22 +505,17 @@ npm install -g @beads/bd
 ```
 Or install via Go instead: `go install github.com/steveyegge/beads/cmd/bd@latest`
 
-### Dolt server mode (optional)
+### Dolt
 
-By default beads ≥0.63 uses **embedded Dolt** — no external server needed.
-If you need multi-writer support (multiple agents writing simultaneously),
-initialize with `bd init --server` and run a separate `dolt sql-server`:
+Rolling Weft uses **server mode** (`bd init --mode server`) because embedded Dolt
+requires a C compiler (CGO) on Windows. This means you need the `dolt` binary installed
+separately — see [Dolt releases](https://github.com/dolthub/dolt/releases).
+
+For multi-writer support (multiple agents writing simultaneously),
+run a separate `dolt sql-server`:
 
 ```powershell
 dolt sql-server --port 3307
-```
-
-To migrate from server mode to embedded:
-```bash
-bd backup                  # export to .beads/backup/*.jsonl
-rm -rf .beads/dolt         # remove server DB
-bd init                    # re-init in embedded mode
-bd backup restore          # import data back
 ```
 
 ### bd not found
